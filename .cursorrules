@@ -17,9 +17,8 @@
 - ReactJS (18.x+)
 - NextJS (13.x+)
 - TypeScript (5.x+)
-- MetronicUI (latest stable)
+- Shadcn UI (latest stable)
 - TailwindCSS (3.x+)
-- Shadcn/ui
 - Radix UI
 - Redux Toolkit
 - React Query / SWR
@@ -190,11 +189,14 @@ export interface QueryNameResponse {
 10. Implement proper error handling
 
 ### Styling
-1. Use MetronicUI classes primarily
-2. Avoid inline styles
-3. CSS modules for component styles
+1. Use Shadcn UI components primarily
+2. Follow Shadcn UI theming system
+3. CSS modules for custom component styles
 4. Mobile-first approach
-5. Consistent spacing
+5. Consistent spacing using Tailwind classes
+6. Use cn() utility for conditional classes
+7. Follow Radix UI's accessibility patterns
+8. Maintain dark/light mode compatibility
 
 ### Forms
 1. Use Formik
