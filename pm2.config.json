@@ -1,0 +1,15 @@
+{
+  "apps": [
+    {
+      "name": "kyas-dashboard",
+
+      "script": "yarn",
+      "args": "start-prod",
+
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 3002
+      }
+    }
+  ]
+}

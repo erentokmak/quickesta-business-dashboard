@@ -1,0 +1,909 @@
+# Comprehensive Development Guidelines and Standards
+
+## Core Development Principles
+
+1. Follow DRY (Don't Repeat Yourself) principle
+2. Write readable and maintainable code over performant code
+3. Implement complete functionality with no TODOs or placeholders
+4. Use proper error handling and validation
+5. Follow step-by-step development approach
+6. Include all required imports and dependencies
+7. Write bug-free, fully functional code
+8. Be explicit rather than implicit
+
+## Technology Stack
+
+### Frontend
+- ReactJS (18.x+)
+- NextJS (13.x+)
+- TypeScript (5.x+)
+- MetronicUI (latest stable)
+- TailwindCSS (3.x+)
+- Shadcn/ui
+- Radix UI
+- Redux Toolkit
+- React Query / SWR
+- Axios
+- Formik + Yup
+- React Testing Library
+- Jest
+- Cypress
+- ESLint + Prettier
+
+### Infrastructure & DevOps
+- Amazon Web Services
+  - RDS for databases
+  - S3 for storage
+  - CloudFront for CDN
+  - Route53 for DNS
+  - ACM for SSL/TLS
+  - ECS/EKS for containers
+- Terraform for Infrastructure as Code
+- Docker & Docker Compose
+- GitHub Actions / GitLab CI
+- SonarQube for code quality
+- DataDog/New Relic for monitoring
+
+### Development Tools
+- VS Code with recommended extensions:
+  - ESLint
+  - Prettier
+  - GitLens
+  - Error Lens
+  - Import Cost
+  - TypeScript Hero
+- Git Flow branching strategy
+- Conventional Commits
+- Husky for git hooks
+- Commitlint
+- Release-it for versioning
+
+## Project Structure
+
+### Directory Organization
+
+1. `/src/types`
+   - TypeScript definitions and interfaces
+   - Domain-specific type files
+   - Common types in `common.types.ts`
+
+2. `/src/utils`
+   - Helper functions and utilities
+   - Business logic helpers
+   - Categorized by purpose
+
+3. `/src/hooks`
+   - Custom React hooks
+   - Prefix with 'use'
+   - One hook per file
+
+4. `/src/context`
+   - React Context providers
+   - Separate context and provider files
+
+5. `/src/ui`
+   - Reusable UI components
+   - Organized by component type
+   - Include tests and documentation
+
+6. `/src/lib`
+   - API related code
+   - Redux store configuration
+   - Services and utilities
+
+7. `/src/components`
+   - Complex, feature-specific components
+   - Layout components
+   - Header/Footer components
+
+8. `/pages`
+   - Next.js pages and routing
+   - Index-based routing structure
+   - Layout implementations
+
+9. `/src/graphql`
+   - `/queries` - GraphQL queries
+   - `/mutations` - GraphQL mutations
+   - `/fragments` - Reusable GraphQL fragments
+   - `/generated` - Auto-generated GraphQL types
+   - `/src/types` - GraphQL type definitions
+
+## GraphQL Standards
+
+### Query Organization
+1. Each query should be in a separate file
+2. File names should clearly indicate the query's purpose (e.g. `getUser.tsx`, `listAddresses.tsx`)
+3. Ensure type safety with TypeScript
+
+### Query Structure
+```typescript
+import { gql } from '@apollo/client'
+
+export const QUERY_NAME = gql`
+  query QueryName($param: Type!) {
+    queryName(param: $param) {
+      field1
+      field2
+    }
+  }
+`
+
+export interface QueryNameVariables {
+  param: string
+}
+
+export interface QueryNameResponse {
+  queryName: {
+    field1: string
+    field2: string
+  }
+}
+```
+
+### Best Practices
+1. Prevent code duplication using fragments
+2. Select necessary fields only, avoid over-fetching
+3. Define query variables as interfaces
+4. Define response types as interfaces
+5. Use proper Apollo Client cache strategies
+
+### Error Handling
+1. Use dedicated error boundaries for GraphQL errors
+2. Handle network errors
+3. Display loading states properly
+4. Implement retry strategies
+5. Define cache invalidation rules
+
+## Coding Standards
+
+### Component Development
+1. Use PascalCase for component files
+2. One component per file
+3. Group related components in feature folders
+4. Use index.ts for clean exports
+5. Implement proper error boundaries
+6. Use React.memo() when needed
+7. Implement proper prop validation
+8. Use proper TypeScript generics when needed
+9. Implement proper loading and error states
+10. Use proper Suspense boundaries
+11. Implement proper memoization strategies
+12. Use proper code splitting
+
+### TypeScript Usage
+1. Define proper interfaces/types
+2. Avoid 'any' type
+3. Use type assertions sparingly
+4. Utilize union types
+5. Keep types in separate files
+
+### State Management
+1. Redux for global state
+2. Local state for component data
+3. Proper loading states
+4. Error state handling
+5. Use selectors for calculations
+6. Implement proper Redux Toolkit slices
+7. Use proper TypeScript types for state
+8. Implement proper middleware
+9. Use proper async thunks
+10. Implement proper error handling
+
+### Styling
+1. Use MetronicUI classes primarily
+2. Avoid inline styles
+3. CSS modules for component styles
+4. Mobile-first approach
+5. Consistent spacing
+
+### Forms
+1. Use Formik
+2. Yup validation
+3. Clear error messages
+4. Loading state handling
+5. Proper reset functionality
+
+### Function and Variable Naming
+1. Use descriptive names
+2. Event handlers: prefix with 'handle'
+3. Use const for function declarations
+4. Define types for functions
+5. Use early returns
+
+### Accessibility
+1. Semantic HTML
+2. ARIA attributes
+3. Keyboard navigation
+4. Color contrast
+5. Screen reader testing
+
+## Infrastructure and Deployment
+
+### AWS Setup
+1. Proper IAM roles
+2. Security groups
+3. RDS for databases
+4. S3 for storage
+5. Monitoring setup
+
+### DevOps
+1. Terraform for infrastructure
+2. Docker for containerization
+3. CI/CD pipelines
+4. Staging environments
+5. Rollback procedures
+
+### Security
+1. Authentication
+2. Authorization
+3. CORS policies
+4. SSL/TLS certificates
+5. Sensitive data handling
+
+### Monitoring and Maintenance
+1. Logging implementation
+2. Performance monitoring
+3. Error tracking
+4. Dependency updates
+5. Code cleanup
+
+## Testing Strategy
+
+1. Unit Tests
+   - Components
+   - Hooks
+   - Utilities
+
+2. Integration Tests
+   - Critical flows
+   - API integration
+   - State management
+
+3. E2E Tests
+   - User flows
+   - Performance
+   - Error scenarios
+
+## Documentation
+
+1. Code Documentation
+   - Complex logic
+   - API endpoints
+   - Environment variables
+
+2. README Files
+   - Setup instructions
+   - Dependencies
+   - Development guidelines
+
+3. Change Management
+   - Version control
+   - Change logs
+   - Migration guides
+
+## Code Review Process
+
+1. Security review
+2. Performance check
+3. Error handling
+4. Accessibility
+5. Test coverage
+
+## Best Practices Checklist
+
+1. Code Quality
+   - DRY principle
+   - Early returns
+   - Proper typing
+   - Error handling
+
+2. Performance
+   - Lazy loading
+   - Code splitting
+   - Bundle optimization
+   - Caching strategies
+
+3. Security
+   - Input validation
+   - Data sanitization
+   - Secure communications
+   - Error handling
+
+4. Maintenance
+   - Clean code
+   - Documentation
+   - Version control
+   - Dependency management
+
+## Project Configuration
+
+### TypeScript Configuration
+```typescript
+// tsconfig.json best practices
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+## Types Organization
+
+### Directory Structure
+```
+/src/types/
+├── graphql/
+│   ├── queries/
+│   │   └── index.ts
+│   ├── mutations/
+│   │   └── index.ts
+│   ├── fragments/
+│   │   └── index.ts
+│   └── generated/
+│       └── index.ts
+├── models/
+│   ├── user.ts
+│   ├── order.ts
+│   ├── stock.ts
+│   └── customer.ts
+├── components/
+│   ├── forms/
+│   ├── tables/
+│   └── ui/
+├── api/
+│   ├── requests/
+│   └── responses/
+├── enums/
+│   └── index.ts
+├── utils/
+│   └── index.ts
+└── common.ts
+```
+
+### Type Categories
+
+1. `/graphql`
+   - Query input/output types
+   - Mutation input/output types
+   - Fragment types
+   - Generated types from GraphQL schema
+   - Reusable GraphQL type utilities
+
+2. `/models`
+   - Core business model interfaces
+   - Domain-specific type definitions
+   - Model relationships and constraints
+   - Model validation types
+   - Model state types
+
+3. `/components`
+   - Component prop types
+   - Component state types
+   - Event handler types
+   - Style prop types
+   - Form field types
+
+4. `/api`
+   - API request/response types
+   - API error types
+   - API configuration types
+   - HTTP client types
+   - API utility types
+
+5. `/enums`
+   - Status enums
+   - Role enums
+   - Permission enums
+   - Configuration enums
+   - Feature flag enums
+
+6. `/utils`
+   - Utility function types
+   - Helper types
+   - Type guards
+   - Type transformers
+   - Generic utility types
+
+### Type Naming Conventions
+
+1. Interfaces
+   ```typescript
+   interface IUser {
+     id: string
+     name: string
+   }
+   ```
+
+2. Types
+   ```typescript
+   type UserResponse = {
+     user: IUser
+     token: string
+   }
+   ```
+
+3. Enums
+   ```typescript
+   enum UserRole {
+     ADMIN = 'ADMIN',
+     USER = 'USER'
+   }
+   ```
+
+4. GraphQL Types
+   ```typescript
+   interface UserQueryInput {
+     id: string
+   }
+
+   interface UserQueryResponse {
+     user: IUser
+   }
+   ```
+
+### Type Export Strategy
+
+1. Barrel Exports
+   ```typescript
+   // /src/types/models/index.ts
+   export * from './user'
+   export * from './order'
+   export * from './stock'
+   ```
+
+2. Named Exports
+   ```typescript
+   // /src/types/models/user.ts
+   export interface IUser { ... }
+   export type UserState = { ... }
+   export enum UserStatus { ... }
+   ```
+
+### Type Documentation
+
+1. Interface Documentation
+   ```typescript
+   /**
+    * Represents a user in the system
+    * @property id - Unique identifier
+    * @property name - User's full name
+    */
+   interface IUser {
+     id: string
+     name: string
+   }
+   ```
+
+2. Type Documentation
+   ```typescript
+   /**
+    * Response type for user authentication
+    * @property user - User details
+    * @property token - JWT token
+    */
+   type AuthResponse = {
+     user: IUser
+     token: string
+   }
+   ```
+
+### Type Best Practices
+
+1. Component Types
+   - Define prop types with interface
+   - Use union types for variants
+   - Include proper JSDoc comments
+   - Keep related types together
+
+2. Model Types
+   - Define clear relationships
+   - Include validation rules
+   - Use strict null checks
+   - Add proper type guards
+
+3. API Types
+   - Match backend types exactly
+   - Include error types
+   - Define success/failure states
+   - Use proper discriminated unions
+
+4. Utility Types
+   - Keep generic types reusable
+   - Document complex type logic
+   - Use TypeScript utility types
+   - Create custom mapped types
+
+### Type Validation
+
+1. Runtime Validation
+   ```typescript
+   import { z } from 'zod'
+
+   const UserSchema = z.object({
+     id: z.string(),
+     name: z.string()
+   })
+
+   type User = z.infer<typeof UserSchema>
+   ```
+
+2. Type Guards
+   ```typescript
+   function isUser(value: unknown): value is IUser {
+     return (
+       typeof value === 'object' &&
+       value !== null &&
+       'id' in value &&
+       'name' in value
+     )
+   }
+   ```
+
+### Type Maintenance
+
+1. Regular Reviews
+   - Check for unused types
+   - Update deprecated types
+   - Maintain type documentation
+   - Verify type accuracy
+
+2. Type Testing
+   - Use TypeScript compiler checks
+   - Write type tests
+   - Validate type constraints
+   - Test edge cases
+
+## Utils Organization and Standards
+
+### Directory Structure
+```
+/src/utils/
+├── api/
+│   ├── axios.ts
+│   ├── interceptors.ts
+│   └── endpoints.ts
+├── auth/
+│   ├── tokens.ts
+│   └── permissions.ts
+├── formatters/
+│   ├── date.ts
+│   ├── number.ts
+│   ├── currency.ts
+│   └── text.ts
+├── validation/
+│   ├── schemas.ts
+│   ├── rules.ts
+│   └── messages.ts
+├── helpers/
+│   ├── array.ts
+│   ├── object.ts
+│   ├── string.ts
+│   └── math.ts
+├── storage/
+│   ├── local.ts
+│   ├── session.ts
+│   └── cookie.ts
+├── constants/
+│   ├── app.ts
+│   ├── api.ts
+│   └── regex.ts
+└── hooks/
+    ├── useDebounce.ts
+    ├── useThrottle.ts
+    └── useLocalStorage.ts
+```
+
+### Naming Conventions
+
+1. File Names
+   - Use camelCase for file names
+   - Be descriptive and specific
+   - Group related utilities
+   - Example: `dateFormatter.ts`, `stringHelpers.ts`
+
+2. Function Names
+   - Use camelCase
+   - Start with a verb
+   - Be descriptive
+   ```typescript
+   // Good
+   formatCurrency()
+   validateEmail()
+   parseDateTime()
+   
+   // Bad
+   currency()
+   emailCheck()
+   date()
+   ```
+
+3. Constant Names
+   - Use UPPER_SNAKE_CASE
+   - Be descriptive
+   ```typescript
+   // Good
+   export const MAX_FILE_SIZE = 5242880
+   export const ALLOWED_FILE_TYPES = ['jpg', 'png']
+   
+   // Bad
+   export const size = 5242880
+   export const types = ['jpg', 'png']
+   ```
+
+### Implementation Rules
+
+1. Type Safety
+   ```typescript
+   // Good
+   function formatNumber(value: number, decimals: number): string {
+     return value.toFixed(decimals)
+   }
+   
+   // Bad
+   function formatNumber(value, decimals) {
+     return value.toFixed(decimals)
+   }
+   ```
+
+2. Error Handling
+   ```typescript
+   // Good
+   function parseJSON<T>(value: string): T | null {
+     try {
+       return JSON.parse(value) as T
+     } catch (error) {
+       console.error('JSON Parse Error:', error)
+       return null
+     }
+   }
+   
+   // Bad
+   function parseJSON(value) {
+     return JSON.parse(value)
+   }
+   ```
+
+3. Default Values
+   ```typescript
+   // Good
+   function slice(str: string, start: number = 0, end?: number): string {
+     return str.slice(start, end)
+   }
+   
+   // Bad
+   function slice(str, start, end) {
+     return str.slice(start || 0, end)
+   }
+   ```
+
+### Documentation Standards
+
+1. Function Documentation
+   ```typescript
+   /**
+    * Formats a number as currency with specified locale and options
+    * @param {number} value - The number to format
+    * @param {string} [locale='tr-TR'] - The locale to use for formatting
+    * @param {Intl.NumberFormatOptions} [options] - Additional formatting options
+    * @returns {string} The formatted currency string
+    * @throws {Error} If value is not a number
+    */
+   export function formatCurrency(
+     value: number,
+     locale: string = 'tr-TR',
+     options?: Intl.NumberFormatOptions
+   ): string {
+     // Implementation
+   }
+   ```
+
+2. Module Documentation
+   ```typescript
+   /**
+    * @module formatters/currency
+    * @description Provides utilities for currency formatting and calculations
+    * @requires Intl
+    */
+   ```
+
+### Best Practices
+
+1. Pure Functions
+   ```typescript
+   // Good
+   function addTax(price: number, rate: number): number {
+     return price * (1 + rate / 100)
+   }
+   
+   // Bad
+   let taxRate = 18
+   function addTax(price: number): number {
+     return price * (1 + taxRate / 100)
+   }
+   ```
+
+2. Single Responsibility
+   ```typescript
+   // Good
+   function formatDate(date: Date): string {
+     return date.toLocaleDateString()
+   }
+   
+   function formatTime(date: Date): string {
+     return date.toLocaleTimeString()
+   }
+   
+   // Bad
+   function formatDateTime(date: Date, includeTime: boolean): string {
+     return includeTime 
+       ? date.toLocaleString()
+       : date.toLocaleDateString()
+   }
+   ```
+
+3. Immutability
+   ```typescript
+   // Good
+   function sortArray<T>(arr: T[]): T[] {
+     return [...arr].sort()
+   }
+   
+   // Bad
+   function sortArray<T>(arr: T[]): T[] {
+     return arr.sort()
+   }
+   ```
+
+### Testing Requirements
+
+1. Unit Tests
+   ```typescript
+   describe('formatCurrency', () => {
+     it('should format number with default locale', () => {
+       expect(formatCurrency(1234.56)).toBe('1.234,56 TL')
+     })
+     
+
+     it('should handle zero values', () => {
+       expect(formatCurrency(0)).toBe('0,00 TL')
+     })
+     
+
+     it('should throw for non-number values', () => {
+       expect(() => formatCurrency('1234.56' as any)).toThrow()
+     })
+   })
+   ```
+
+2. Edge Cases
+   ```typescript
+   describe('parseNumber', () => {
+     it('should handle null values', () => {
+       expect(parseNumber(null)).toBe(0)
+     })
+     
+     it('should handle undefined values', () => {
+       expect(parseNumber(undefined)).toBe(0)
+     })
+     
+     it('should handle empty strings', () => {
+       expect(parseNumber('')).toBe(0)
+     })
+   })
+   ```
+
+### Performance Guidelines
+
+1. Memoization
+   ```typescript
+   import { memoize } from 'lodash'
+   
+   export const calculateComplexValue = memoize(
+     (value: number): number => {
+       // Complex calculation
+       return value
+     }
+   )
+   ```
+
+2. Lazy Evaluation
+   ```typescript
+   export const heavyOperation = (() => {
+     let result: number | null = null
+     
+     return (value: number): number => {
+       if (result === null) {
+         result = /* complex calculation */
+       }
+       return result
+     }
+   })()
+   ```
+
+### Security Practices
+
+1. Input Sanitization
+   ```typescript
+   export function sanitizeHTML(input: string): string {
+     return input
+       .replace(/&/g, '&amp;')
+       .replace(/</g, '&lt;')
+       .replace(/>/g, '&gt;')
+       .replace(/"/g, '&quot;')
+       .replace(/'/g, '&#039;')
+   }
+   ```
+
+2. Sensitive Data Handling
+   ```typescript
+   export function maskCreditCard(cardNumber: string): string {
+     return cardNumber.slice(-4).padStart(cardNumber.length, '*')
+   }
+   ```
+
+### Export Strategy
+
+1. Named Exports
+   ```typescript
+   // formatters/currency.ts
+   export function formatCurrency() { /* ... */ }
+   export function parseCurrency() { /* ... */ }
+   ```
+
+2. Barrel Exports
+   ```typescript
+   // formatters/index.ts
+   export * from './currency'
+   export * from './date'
+   export * from './number'
+   ```
+
+### Maintenance Guidelines
+
+1. Deprecation
+   ```typescript
+   /** @deprecated Use formatCurrency instead */
+   export function formatMoney(value: number): string {
+     return formatCurrency(value)
+   }
+   ```
+
+2. Version Compatibility
+   ```typescript
+   /** @since 2.0.0 */
+   export function newFeature(): void {
+     // Implementation
+   }
+   ```
+
+3. Breaking Changes
+   ```typescript
+   /** 
+    * @breaking-change 3.0.0 
+    * - Removed optional parameters
+    * - Changed return type from string to number
+    */
+   export function updatedFeature(): void {
+     // Implementation
+   }
+   ```
