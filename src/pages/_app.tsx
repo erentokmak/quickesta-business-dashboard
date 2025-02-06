@@ -1,27 +1,10 @@
 import '../styles/globals.css'
 import { useEffect } from 'react'
-import {
-  Base,
-  Container,
-  DetailPageActions,
-  Footer,
-  Header,
-  Main,
-  Sidebar,
-  Wrapper,
-} from '@/components/layout'
-import dynamic from 'next/dynamic'
+import { Base, Main } from '@/components/layout'
 import { SessionProvider, useSession } from 'next-auth/react'
 import { useRouter } from 'next/compat/router'
 import { ApolloProvider } from '@apollo/client'
 import client from '@/lib/apollo-client'
-import { Toaster } from 'sonner'
-import { ActionToolbar } from '@/ui/toolbar'
-import { AnimatePresence } from 'framer-motion'
-
-const GlobalInit = dynamic(() => import('@/components/GlobalInit'), {
-  ssr: false,
-})
 
 const PUBLIC_PATHS = [
   '/auth/sign-in',
@@ -43,13 +26,6 @@ function AppContent({
     currentPath as (typeof PUBLIC_PATHS)[number],
   )
   const isLoading = status === 'loading'
-  const hasToolbar = Object.keys(Component).some((key) =>
-    ['title', 'breadcrumbs', 'actions'].includes(key),
-  )
-  const hasDetailPageActions = Object.keys(Component).includes(
-    'hasDetailPageActions',
-  )
-
   useEffect(() => {
     if (isLoading) return
 
@@ -67,38 +43,15 @@ function AppContent({
 
   return (
     <ApolloProvider client={client}>
-      <AnimatePresence mode="wait">
-        {session ? (
-          <Base key={router?.pathname || '/'}>
-            <Header />
-            {!hasDetailPageActions && <Sidebar />}
-            <Wrapper hasDetailPageActions={hasDetailPageActions}>
-              {hasDetailPageActions && (
-                <DetailPageActions
-                  title={Component.title}
-                  breadcrumbs={Component.breadcrumbs}
-                  sections={Component.sections}
-                  isHaveSaveButton={Component.isHaveSaveButton}
-                  onSave={Component.onSave}
-                />
-              )}
-              <Main>
-                {!hasDetailPageActions && hasToolbar && (
-                  <ActionToolbar {...Component} />
-                )}
-                <Container>
-                  <Component {...pageProps} />
-                </Container>
-                <Footer />
-              </Main>
-            </Wrapper>
-            <GlobalInit />
-          </Base>
-        ) : (
-          <Component {...pageProps} />
-        )}
-      </AnimatePresence>
-      <Toaster position="bottom-right" richColors duration={2000} />
+      {session ? (
+        <Base key={router?.pathname || '/'}>
+          <Main>
+            <Component {...pageProps} />
+          </Main>
+        </Base>
+      ) : (
+        <Component {...pageProps} />
+      )}
     </ApolloProvider>
   )
 }

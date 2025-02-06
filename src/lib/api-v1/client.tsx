@@ -10,14 +10,12 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    //console.log('Request URL:', config.baseURL + config.url)
-    //console.log('Request Body:', config.data)
-    //console.log('Request Headers:', config.headers)
     return config
   },
   (error) => {
     return Promise.reject(error)
   },
+
 )
 
 axiosInstance.interceptors.response.use(

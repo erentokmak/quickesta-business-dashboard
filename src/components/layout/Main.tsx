@@ -14,11 +14,9 @@ const Main: React.FC<MainProps> = ({ children }) => {
       animate="animate"
       exit="exit"
       transition={getTransition(0.2)}
-      className="grow no-scrollbar scrollable-y"
-      data-scrollable="true"
-      data-scrollable-offset="40px"
       role="content"
     >
+
       {children}
     </motion.main>
   )

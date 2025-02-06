@@ -17,19 +17,23 @@ export default function SignIn({ csrfToken }) {
         redirect: false,
         username,
         password,
-        remember: true
+        remember: true,
       })
 
       if (result?.error) {
         try {
           const errorData = JSON.parse(result.error)
           toast.error(errorData.detail || 'Giriş başarısız oldu.', {
-            description: errorData.title ? `${errorData.title} (${errorData.status})` : undefined
+            description: errorData.title
+              ? `${errorData.title} (${errorData.status})`
+              : undefined,
           })
         } catch {
           const errorData = JSON.parse(result.error)
           toast.error(errorData.detail || 'Giriş başarısız oldu.', {
-            description: errorData.title ? `${errorData.title} (${errorData.status})` : undefined
+            description: errorData.title
+              ? `${errorData.title} (${errorData.status})`
+              : undefined,
           })
         }
         setIsLoading(false)
@@ -39,12 +43,11 @@ export default function SignIn({ csrfToken }) {
       }
     } catch (error) {
       toast.error('Bir hata oluştu. Lütfen tekrar deneyin.', {
-        description: error.message ? error.message : undefined
+        description: error.message ? error.message : undefined,
       })
       setIsLoading(false)
     }
   }
-
 
   return (
     <div className="flex items-center justify-center grow bg-center bg-no-repeat page-bg">

@@ -14,7 +14,6 @@ const Base: React.FC<BaseProps> = ({ children }) => {
       animate="animate"
       exit="exit"
       transition={getTransition()}
-      className="flex grow"
     >
       {children}
     </motion.div>
