@@ -5,6 +5,8 @@ import { SessionProvider, useSession } from 'next-auth/react'
 import { useRouter } from 'next/compat/router'
 import { ApolloProvider } from '@apollo/client'
 import client from '@/lib/apollo-client'
+import '@/styles/globals.css'
+import type { AppProps } from 'next/app'
 
 const PUBLIC_PATHS = [
   '/auth/sign-in',
