@@ -8,10 +8,13 @@ declare module 'next-auth' {
       email: string
       name: string
       surname: string
-      phoneNumber: string | null
-      description: string | null
+      phoneNumber: string
+      username: string
       access_token: string
+      refresh_token: string
       expiresIn: number
+      roles: string[]
+      permissions: string[]
     }
   }
 
@@ -20,10 +23,13 @@ declare module 'next-auth' {
     email: string
     name: string
     surname: string
-    phoneNumber: string | null
-    description: string | null
+    phoneNumber: string
+    username: string
     access_token: string
+    refresh_token: string
     expiresIn: number
+    roles: string[]
+    permissions: string[]
   }
 }
 
@@ -34,10 +40,13 @@ declare module 'next-auth/jwt' {
       email: string
       name: string
       surname: string
-      phoneNumber: string | null
-      description: string | null
+      phoneNumber: string
+      username: string
       access_token: string
+      refresh_token: string
       expiresIn: number
+      roles: string[]
+      permissions: string[]
     }
   }
 }

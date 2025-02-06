@@ -1,5 +1,4 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
-import crypto from 'crypto'
 import { login } from '@/lib/api-v1/auth'
 import { NextApiRequest, NextApiResponse } from 'next'
 import type { AuthOptions } from 'next-auth'
@@ -18,32 +17,36 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
         credentials: {
           username: { label: 'Username', type: 'text' },
           password: { label: 'Password', type: 'password' },
+          remember: { label: 'Remember me', type: 'checkbox' }
+
         },
         authorize: async (credentials) => {
           try {
-            const hashedPassword = crypto
-              .createHash('md5')
-              .update(credentials?.password || '')
-              .digest('hex')
-
             const data = JSON.stringify({
-              Email: credentials?.username || '',
-              Password: hashedPassword,
+              userNameOrEmail: credentials?.username || '',
+              password: credentials?.password || '',
+              remember: credentials?.remember === 'true'
+
             })
+            console.log(data)
 
             const response = await login(data)
-            const userData = response.Data
-
-            if (response.Result) {
+            console.log(response)
+            
+            if (response.isSuccess) {
+              const userData = response.value
               const user = {
-                id: userData.UserID.toString(),
-                email: userData.Email || credentials?.username || '',
-                name: userData.UserName || '',
-                surname: userData.UserSurname || '',
-                phoneNumber: userData.Phone,
-                description: userData.Description,
-                access_token: response.access_token,
-                expiresIn: response.expires_in,
+                id: userData.id,
+                email: userData.jsonWebToken.email,
+                name: userData.firstName,
+                surname: userData.lastName,
+                phoneNumber: userData.phoneNumber,
+                username: userData.username,
+                access_token: userData.jsonWebToken.accessToken,
+                refresh_token: userData.refreshToken,
+                expiresIn: new Date(userData.jsonWebToken.expires).getTime(),
+                roles: userData.jsonWebToken.roles,
+                permissions: userData.jsonWebToken.permissions
               }
               return user
             }
@@ -69,8 +72,7 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
         return session
       },
       redirect({ url }) {
-        const siteUrl =
-          process.env.NEXT_PUBLIC_SITE_URL || 'https://dashboard.abantsu.com.tr'
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
         if (url.startsWith('/auth/sign-in')) {
           return `${siteUrl}/auth/sign-in`
@@ -81,10 +83,10 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
     },
     session: {
       strategy: 'jwt',
-      maxAge: 30 * 24 * 60 * 60,
+      maxAge: 30 * 24 * 60 * 60, // 30 days
     },
     jwt: {
-      maxAge: 30 * 24 * 60 * 60,
+      maxAge: 30 * 24 * 60 * 60, // 30 days
     },
     pages: {
       signIn: '/auth/sign-in',
