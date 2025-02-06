@@ -18,7 +18,6 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
           username: { label: 'Username', type: 'text' },
           password: { label: 'Password', type: 'password' },
           remember: { label: 'Remember me', type: 'checkbox' }
-
         },
         authorize: async (credentials) => {
           try {
@@ -26,7 +25,6 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
               userNameOrEmail: credentials?.username || '',
               password: credentials?.password || '',
               remember: credentials?.remember === 'true'
-
             })
             console.log(data)
 
@@ -50,11 +48,21 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
               }
               return user
             }
+
+            if (response.data?.detail) {
+              throw new Error(JSON.stringify({ 
+                detail: response.data.detail,
+                status: response.data.status,
+                title: response.data.title
+              }))
+            }
+
+            throw new Error(JSON.stringify({ detail: 'Giriş başarısız oldu.' }))
+
           } catch (error) {
             console.error('Authentication error:', error)
+            throw new Error(error instanceof Error ? error.message : JSON.stringify({ detail: 'Bir hata oluştu' }))
           }
-
-          return null
         },
       }),
     ],
