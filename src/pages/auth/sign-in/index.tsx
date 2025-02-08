@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { getCsrfToken, signIn } from 'next-auth/react'
 import Image from 'next/image'
 import { toast } from 'sonner'
-import { LoginForm } from '@/components/login-form'
 export default function SignIn({ csrfToken }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -51,7 +50,6 @@ export default function SignIn({ csrfToken }) {
 
   return (
     <div className="flex items-center justify-center grow bg-center bg-no-repeat page-bg">
-      <LoginForm />
 
       <div className="card max-w-[370px] w-full">
         <form
