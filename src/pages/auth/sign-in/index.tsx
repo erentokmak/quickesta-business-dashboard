@@ -15,7 +15,7 @@ import {
 } from '@/ui/card'
 import { useIsMobile } from '@/hooks/Responsive'
 
-export default function SignIn({  }) {
+export default function SignIn({}) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -31,43 +31,21 @@ export default function SignIn({  }) {
         username,
         password,
       })
-
-      console.log(result)
       if (result?.error) {
-        // API'den gelen hata mesajını parse et
-        try {
-          const errorData = JSON.parse(result.error)
-          toast.error('Giriş başarısız', {
-            description: errorData.detail || 'Bilinmeyen bir hata oluştu.',
-          })
-        } catch {
-          // JSON parse edilemezse genel hata mesajı göster
-          toast.error('Giriş başarısız', {
-            description: result.error || 'Bilinmeyen bir hata oluştu.',
-          })
-        }
-      } else {
-        toast.success('Giriş başarılı!', {
-          description: 'Yönlendiriliyorsunuz...',
+        const errorData = JSON.parse(result.error)
+        toast.error(errorData.message, {
+          description: errorData.detail,
         })
-        window.location.href = '/dashboard'
+        return
       }
+
+      toast.success('Giriş başarılı!', {
+        description: 'Yönlendiriliyorsunuz...',
+      })
+      window.location.href = '/dashboard'
     } catch (error) {
-      // Genel hata durumu
-      let errorMessage = 'Bir hata oluştu'
-      let errorDetail = 'Lütfen daha sonra tekrar deneyin.'
-
-      if (error instanceof Error) {
-        try {
-          const parsedError = JSON.parse(error.message)
-          errorDetail = parsedError.detail || errorDetail
-        } catch {
-          errorDetail = error.message
-        }
-      }
-
-      toast.error(errorMessage, {
-        description: errorDetail,
+      toast.error('Bir hata oluştu', {
+        description: 'Lütfen daha sonra tekrar deneyin.',
       })
     } finally {
       setIsLoading(false)

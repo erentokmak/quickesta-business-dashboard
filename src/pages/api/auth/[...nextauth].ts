@@ -20,67 +20,59 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
           remember: { label: 'Remember me', type: 'checkbox' },
         },
         authorize: async (credentials) => {
+          const data = JSON.stringify({
+            userNameOrEmail: credentials?.username || '',
+            password: credentials?.password || '',
+            remember: credentials?.remember === 'true',
+          })
+
           try {
-            const data = JSON.stringify({
-              userNameOrEmail: credentials?.username || '',
-              password: credentials?.password || '',
-              remember: credentials?.remember === 'true',
-            })
             const response = await login(data)
-            
+
             if (response.isSuccess) {
-              const userData = response.value
-              const user = {
-                id: userData.id,
-                email: userData.jsonWebToken.email,
-                name: userData.firstName,
-                surname: userData.lastName,
-                phoneNumber: userData.phoneNumber,
-                username: userData.username,
-                access_token: userData.jsonWebToken.accessToken,
-                refresh_token: userData.refreshToken,
-                expiresIn: new Date(userData.jsonWebToken.expires).getTime(),
-                roles: userData.jsonWebToken.roles,
-                permissions: userData.jsonWebToken.permissions,
+              return {
+                id: response.value.id,
+                email: response.value.jsonWebToken.email,
+                name: response.value.firstName,
+                surname: response.value.lastName,
+                phoneNumber: response.value.phoneNumber,
+                username: response.value.username,
+                access_token: response.value.jsonWebToken.accessToken,
+                refresh_token: response.value.refreshToken,
+                expiresIn: new Date(
+                  response.value.jsonWebToken.expires,
+                ).getTime(),
+                roles: response.value.jsonWebToken.roles,
+                permissions: response.value.jsonWebToken.permissions,
               }
-              return user
             }
 
-            if (response.status === 404) {
-              throw new Error(JSON.stringify({
-                detail: 'Kullanıcı adı veya şifre hatalı',
-                status: 404,
-                title: 'Giriş Başarısız'
-              }))
+            throw new Error(JSON.stringify({ message: 'Giriş başarısız' }))
+          } catch (error: any) {
+            // API'den gelen hata yanıtını kontrol et
+            if (error.response?.data) {
+              const errorData = error.response.data
+              const status = errorData.status
+              const detail = errorData.detail
+
+              // Hata durumlarına göre özel mesajlar
+              if (status === 404) {
+                throw new Error(JSON.stringify({ 
+                  message: 'Kullanıcı bulunamadı',
+                  detail: detail
+                }))
+              } else if (status === 400) {
+                throw new Error(JSON.stringify({ 
+                  message: 'Şifre hatalı',
+                  detail: detail
+                }))
+              }
             }
 
-            const errorMessage = {
-              400: 'Geçersiz istek',
-              401: 'Yetkisiz erişim',
-              403: 'Erişim reddedildi',
-              500: 'Sunucu hatası',
-            }[response.status] || 'Bir hata oluştu'
-
-            throw new Error(JSON.stringify({
-              detail: response.error || errorMessage,
-              status: response.status || 400,
-              title: response.title || 'Hata'
-            }))
-
-          } catch (error) {
-            
-            if (typeof error === 'string') {
-              throw new Error(error)
-            }
-            
-            if (error instanceof Error) {
-              throw new Error(error.message)
-            }
-
-            throw new Error(JSON.stringify({
-              detail: 'Beklenmeyen bir hata oluştu',
-              status: 500,
-              title: 'Sunucu Hatası'
+            // Genel hata durumu
+            throw new Error(JSON.stringify({ 
+              message: 'Giriş yapılırken bir hata oluştu',
+              detail: error.message
             }))
           }
         },
