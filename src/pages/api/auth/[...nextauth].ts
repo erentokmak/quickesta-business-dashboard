@@ -67,7 +67,8 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
                 throw new Error(
                   JSON.stringify({
                     message: 'Şifre veya kullanıcı adı hatalı',
-                    detail: 'Lütfen kullanıcı adınızı ve şifrenizi kontrol ediniz.',
+                    detail:
+                      'Lütfen kullanıcı adınızı ve şifrenizi kontrol ediniz.',
                   }),
                 )
               }
