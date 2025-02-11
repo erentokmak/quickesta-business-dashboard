@@ -57,23 +57,29 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
 
               // Hata durumlarına göre özel mesajlar
               if (status === 404) {
-                throw new Error(JSON.stringify({ 
-                  message: 'Kullanıcı bulunamadı',
-                  detail: detail
-                }))
+                throw new Error(
+                  JSON.stringify({
+                    message: 'Kullanıcı bulunamadı',
+                    detail: detail,
+                  }),
+                )
               } else if (status === 400) {
-                throw new Error(JSON.stringify({ 
-                  message: 'Şifre hatalı',
-                  detail: detail
-                }))
+                throw new Error(
+                  JSON.stringify({
+                    message: 'Şifre veya kullanıcı adı hatalı',
+                    detail: 'Lütfen kullanıcı adınızı ve şifrenizi kontrol ediniz.',
+                  }),
+                )
               }
             }
 
             // Genel hata durumu
-            throw new Error(JSON.stringify({ 
-              message: 'Giriş yapılırken bir hata oluştu',
-              detail: error.message
-            }))
+            throw new Error(
+              JSON.stringify({
+                message: 'Giriş yapılırken bir hata oluştu',
+                detail: error.message,
+              }),
+            )
           }
         },
       }),

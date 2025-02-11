@@ -34,10 +34,11 @@ export default function SignIn({}) {
       })
 
       if (result?.error) {
+        const errorData = JSON.parse(result.error)
         toast({
           variant: 'destructive',
-          title: 'Giriş başarısız oldu',
-          description: 'Kullanıcı adı veya şifre hatalı.',
+          title: errorData.message,
+          description: errorData.detail,
         })
         return
       }
@@ -46,6 +47,7 @@ export default function SignIn({}) {
         title: 'Giriş başarılı!',
         description: 'Ana sayfaya yönlendiriliyorsunuz...',
       })
+      window.location.href = '/dashboard'
     } catch (error) {
       toast({
         variant: 'destructive',
