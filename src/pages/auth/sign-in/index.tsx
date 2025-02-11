@@ -13,7 +13,7 @@ import {
   CardContent,
 } from '@/ui/card'
 import { useIsMobile } from '@/hooks/Responsive'
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from '@/hooks/use-toast'
 
 export default function SignIn({}) {
   const [username, setUsername] = useState('')
@@ -35,23 +35,22 @@ export default function SignIn({}) {
 
       if (result?.error) {
         toast({
-          variant: "destructive",
-          title: "Giriş başarısız oldu",
-          description: "Kullanıcı adı veya şifre hatalı.",
+          variant: 'destructive',
+          title: 'Giriş başarısız oldu',
+          description: 'Kullanıcı adı veya şifre hatalı.',
         })
         return
       }
 
       toast({
-        title: "Giriş başarılı!",
-        description: "Ana sayfaya yönlendiriliyorsunuz...",
+        title: 'Giriş başarılı!',
+        description: 'Ana sayfaya yönlendiriliyorsunuz...',
       })
-      window.location.href = '/dashboard'
     } catch (error) {
       toast({
-        variant: "destructive",
-        title: "Bir sorun oluştu",
-        description: "Lütfen daha sonra tekrar deneyiniz.",
+        variant: 'destructive',
+        title: 'Bir sorun oluştu',
+        description: 'Lütfen daha sonra tekrar deneyiniz.',
       })
     } finally {
       setIsLoading(false)
