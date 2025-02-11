@@ -10,7 +10,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/ui/
 import { useIsMobile } from '@/hooks/Responsive'
 
 export default function SignIn({ csrfToken }) {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const isMobile = useIsMobile()
@@ -22,7 +22,7 @@ export default function SignIn({ csrfToken }) {
     try {
       const result = await signIn('credentials', {
         redirect: false,
-        email,
+        username,
         password,
       })
 
@@ -60,7 +60,7 @@ export default function SignIn({ csrfToken }) {
                     </div>
                     <span className="sr-only">Quickesta</span>
                   </a>
-                  <h1 className="text-xl font-bold">Quickesta'ya Hoş Geldiniz</h1>
+                  <h1 className="text-xl font-bold">Quickesta&apos;ya Hoş Geldiniz</h1>
                   <div className="text-center text-sm">
                     Hesabınız yok mu?{' '}
                     <a href="#" className="underline underline-offset-4">Kayıt Ol</a>
@@ -70,11 +70,11 @@ export default function SignIn({ csrfToken }) {
                   <div className="grid gap-2">
                     <Label htmlFor="email">E-posta</Label>
                     <Input
-                      id="email"
+                      id="username"
                       type="email"
                       placeholder="ornek@mail.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       required
                     />
                   </div>
@@ -116,7 +116,7 @@ export default function SignIn({ csrfToken }) {
             </form>
             <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
               Devam ederek <a href="#">Kullanım Koşulları</a> ve{' '}
-              <a href="#">Gizlilik Politikası</a>'nı kabul etmiş olursunuz.
+              <a href="#">Gizlilik Politikası</a>&apos;nı kabul etmiş olursunuz.
             </div>
           </div>
         </div>
@@ -167,11 +167,11 @@ export default function SignIn({ csrfToken }) {
                   <div className="grid gap-2">
                     <Label htmlFor="email">E-posta</Label>
                     <Input
-                      id="email"
+                      id="username"
                       type="email"
                       placeholder="ornek@mail.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       required
                     />
                   </div>
@@ -205,7 +205,7 @@ export default function SignIn({ csrfToken }) {
         </Card>
         <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
           Devam ederek <a href="#">Kullanım Koşulları</a> ve{' '}
-          <a href="#">Gizlilik Politikası</a>'nı kabul etmiş olursunuz.
+          <a href="#">Gizlilik Politikası</a>&apos;nı kabul etmiş olursunuz.
         </div>
       </div>
     </div>
