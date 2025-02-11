@@ -17,20 +17,20 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
         credentials: {
           username: { label: 'Username', type: 'text' },
           password: { label: 'Password', type: 'password' },
-          remember: { label: 'Remember me', type: 'checkbox' }
+          remember: { label: 'Remember me', type: 'checkbox' },
         },
         authorize: async (credentials) => {
           try {
             const data = JSON.stringify({
               userNameOrEmail: credentials?.username || '',
               password: credentials?.password || '',
-              remember: credentials?.remember === 'true'
+              remember: credentials?.remember === 'true',
             })
             console.log(data)
 
             const response = await login(data)
             console.log(response)
-            
+
             if (response.isSuccess) {
               const userData = response.value
               const user = {
@@ -44,24 +44,29 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
                 refresh_token: userData.refreshToken,
                 expiresIn: new Date(userData.jsonWebToken.expires).getTime(),
                 roles: userData.jsonWebToken.roles,
-                permissions: userData.jsonWebToken.permissions
+                permissions: userData.jsonWebToken.permissions,
               }
               return user
             }
 
             if (response.data?.detail) {
-              throw new Error(JSON.stringify({ 
-                detail: response.data.detail,
-                status: response.data.status,
-                title: response.data.title
-              }))
+              throw new Error(
+                JSON.stringify({
+                  detail: response.data.detail,
+                  status: response.data.status,
+                  title: response.data.title,
+                }),
+              )
             }
 
             throw new Error(JSON.stringify({ detail: 'Giriş başarısız oldu.' }))
-
           } catch (error) {
             console.error('Authentication error:', error)
-            throw new Error(error instanceof Error ? error.message : JSON.stringify({ detail: 'Bir hata oluştu' }))
+            throw new Error(
+              error instanceof Error
+                ? error.message
+                : JSON.stringify({ detail: 'Bir hata oluştu' }),
+            )
           }
         },
       }),
@@ -80,7 +85,8 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
         return session
       },
       redirect({ url }) {
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+        const siteUrl =
+          process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
         if (url.startsWith('/auth/sign-in')) {
           return `${siteUrl}/auth/sign-in`
