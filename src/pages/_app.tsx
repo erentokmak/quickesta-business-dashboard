@@ -1,47 +1,54 @@
-import '../styles/globals.css'
+import '@/styles/globals.css'
+
+// Core imports
 import { useEffect } from 'react'
-import { Base, Main } from '@/components/layout'
-import { SessionProvider, useSession } from 'next-auth/react'
 import { useRouter } from 'next/compat/router'
+
+// Auth imports
+import { SessionProvider, useSession } from 'next-auth/react'
+
+// Apollo imports
 import { ApolloProvider } from '@apollo/client'
 import client from '@/lib/apollo-client'
-import '@/styles/globals.css'
+
+// Component imports
+import { Base, Main } from '@/components/layout'
 import { Toaster } from '@/ui/toaster'
 
+// Types
+type AppProps = {
+  Component: React.ComponentType<any>
+  pageProps: any
+}
+
+// Constants
 const PUBLIC_PATHS = [
   '/auth/sign-in',
   '/auth/forgot-password',
   '/auth/sign-up',
 ] as const
 
-function AppContent({
-  Component,
-  pageProps,
-}: {
-  Component: any
-  pageProps: any
-}) {
+// App Content Component
+function AppContent({ Component, pageProps }: AppProps) {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const currentPath = router?.pathname || ''
   const isPublicPath = PUBLIC_PATHS.includes(
-    currentPath as (typeof PUBLIC_PATHS)[number],
+    router?.pathname as (typeof PUBLIC_PATHS)[number],
   )
-  const isLoading = status === 'loading'
-  useEffect(() => {
-    if (isLoading) return
 
+  // Auth redirect effect
+  useEffect(() => {
+    if (status === 'loading') return
     if (session?.user && isPublicPath) {
-      router?.push('/')
+      router?.push('/dashboard')
       return
     }
-
     if (!session?.user && !isPublicPath) {
       router?.push('/auth/sign-in')
     }
-  }, [session, isLoading, router, isPublicPath])
+  }, [session, status, router, isPublicPath])
 
-  if (isLoading) return null
+  if (status === 'loading') return null
 
   return (
     <ApolloProvider client={client}>
@@ -59,13 +66,8 @@ function AppContent({
   )
 }
 
-export default function App({
-  Component,
-  pageProps,
-}: {
-  Component: any
-  pageProps: any
-}) {
+// Root App Component
+export default function App({ Component, pageProps }: AppProps) {
   return (
     <SessionProvider session={pageProps.session}>
       <AppContent Component={Component} pageProps={pageProps} />
