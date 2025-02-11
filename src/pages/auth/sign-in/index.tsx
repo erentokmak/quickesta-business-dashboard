@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { getCsrfToken, signIn } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
 import { Button } from '@/ui/button'
 import { cn } from '@/lib/utils'
@@ -15,7 +15,7 @@ import {
 } from '@/ui/card'
 import { useIsMobile } from '@/hooks/Responsive'
 
-export default function SignIn({ csrfToken }) {
+export default function SignIn({  }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -267,8 +267,6 @@ export default function SignIn({ csrfToken }) {
 
 export async function getServerSideProps(context) {
   return {
-    props: {
-      csrfToken: (await getCsrfToken(context)) || null,
-    },
+    props: {},
   }
 }
