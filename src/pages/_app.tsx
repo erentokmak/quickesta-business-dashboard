@@ -46,7 +46,7 @@ function AppContent({
   return (
     <ApolloProvider client={client}>
       {session ? (
-        <Base key={router?.pathname || '/'}>
+        <Base>
           <Main>
             <Component {...pageProps} />
           </Main>
