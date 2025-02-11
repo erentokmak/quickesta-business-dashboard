@@ -16,7 +16,6 @@ const Main: React.FC<MainProps> = ({ children }) => {
       transition={getTransition(0.2)}
       role="content"
     >
-
       {children}
     </motion.main>
   )
