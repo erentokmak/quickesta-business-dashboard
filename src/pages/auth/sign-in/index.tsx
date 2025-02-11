@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { toast } from 'sonner'
 import { Button } from '@/ui/button'
 import { cn } from '@/lib/utils'
 import { Label } from '@/ui/label'
@@ -14,12 +13,14 @@ import {
   CardContent,
 } from '@/ui/card'
 import { useIsMobile } from '@/hooks/Responsive'
+import { useToast } from "@/hooks/use-toast"
 
 export default function SignIn({}) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const isMobile = useIsMobile()
+  const { toast } = useToast()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -33,18 +34,24 @@ export default function SignIn({}) {
       })
 
       if (result?.error) {
-        toast.error('Giriş başarısız oldu', {
-          description: 'Kullanıcı adı veya şifre hatalı.',
+        toast({
+          variant: "destructive",
+          title: "Giriş başarısız oldu",
+          description: "Kullanıcı adı veya şifre hatalı.",
         })
         return
       }
 
-      toast.success('Giriş başarılı!', {
-        description: 'Ana sayfaya yönlendiriliyorsunuz...',
+      toast({
+        title: "Giriş başarılı!",
+        description: "Ana sayfaya yönlendiriliyorsunuz...",
       })
+      window.location.href = '/dashboard'
     } catch (error) {
-      toast.error('Bir sorun oluştu', {
-        description: 'Lütfen daha sonra tekrar deneyiniz.',
+      toast({
+        variant: "destructive",
+        title: "Bir sorun oluştu",
+        description: "Lütfen daha sonra tekrar deneyiniz.",
       })
     } finally {
       setIsLoading(false)
