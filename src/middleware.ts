@@ -12,7 +12,7 @@ export async function middleware(req) {
     pathname.startsWith('/roles')
   ) {
     if (!token || token.role !== 'superadmin') {
-      return NextResponse.redirect(new URL('/', req.url))
+      return NextResponse.redirect(new URL('/dashboard', req.url))
     }
   }
 
