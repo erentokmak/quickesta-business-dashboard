@@ -31,21 +31,20 @@ export default function SignIn({}) {
         username,
         password,
       })
+
       if (result?.error) {
-        const errorData = JSON.parse(result.error)
-        toast.error(errorData.message, {
-          description: errorData.detail,
+        toast.error('Giriş başarısız oldu', {
+          description: 'Kullanıcı adı veya şifre hatalı.',
         })
         return
       }
 
       toast.success('Giriş başarılı!', {
-        description: 'Yönlendiriliyorsunuz...',
+        description: 'Ana sayfaya yönlendiriliyorsunuz...',
       })
-      window.location.href = '/dashboard'
     } catch (error) {
-      toast.error('Bir hata oluştu', {
-        description: 'Lütfen daha sonra tekrar deneyin.',
+      toast.error('Bir sorun oluştu', {
+        description: 'Lütfen daha sonra tekrar deneyiniz.',
       })
     } finally {
       setIsLoading(false)
