@@ -26,11 +26,8 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
               password: credentials?.password || '',
               remember: credentials?.remember === 'true',
             })
-            console.log(data)
-
             const response = await login(data)
-            console.log(response)
-
+            
             if (response.isSuccess) {
               const userData = response.value
               const user = {
@@ -49,24 +46,42 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
               return user
             }
 
-            if (response.data?.detail) {
-              throw new Error(
-                JSON.stringify({
-                  detail: response.data.detail,
-                  status: response.data.status,
-                  title: response.data.title,
-                }),
-              )
+            if (response.status === 404) {
+              throw new Error(JSON.stringify({
+                detail: 'Kullanıcı adı veya şifre hatalı',
+                status: 404,
+                title: 'Giriş Başarısız'
+              }))
             }
 
-            throw new Error(JSON.stringify({ detail: 'Giriş başarısız oldu.' }))
+            const errorMessage = {
+              400: 'Geçersiz istek',
+              401: 'Yetkisiz erişim',
+              403: 'Erişim reddedildi',
+              500: 'Sunucu hatası',
+            }[response.status] || 'Bir hata oluştu'
+
+            throw new Error(JSON.stringify({
+              detail: response.error || errorMessage,
+              status: response.status || 400,
+              title: response.title || 'Hata'
+            }))
+
           } catch (error) {
-            console.error('Authentication error:', error)
-            throw new Error(
-              error instanceof Error
-                ? error.message
-                : JSON.stringify({ detail: 'Bir hata oluştu' }),
-            )
+            
+            if (typeof error === 'string') {
+              throw new Error(error)
+            }
+            
+            if (error instanceof Error) {
+              throw new Error(error.message)
+            }
+
+            throw new Error(JSON.stringify({
+              detail: 'Beklenmeyen bir hata oluştu',
+              status: 500,
+              title: 'Sunucu Hatası'
+            }))
           }
         },
       }),
@@ -95,6 +110,7 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
         return url.startsWith(siteUrl) ? url : siteUrl
       },
     },
+    secret: process.env.NEXTAUTH_SECRET,
     session: {
       strategy: 'jwt',
       maxAge: 30 * 24 * 60 * 60, // 30 days

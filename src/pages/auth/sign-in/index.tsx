@@ -32,10 +32,20 @@ export default function SignIn({ csrfToken }) {
         password,
       })
 
+      console.log(result)
       if (result?.error) {
-        toast.error('Giriş başarısız', {
-          description: 'Email veya şifre hatalı.',
-        })
+        // API'den gelen hata mesajını parse et
+        try {
+          const errorData = JSON.parse(result.error)
+          toast.error('Giriş başarısız', {
+            description: errorData.detail || 'Bilinmeyen bir hata oluştu.',
+          })
+        } catch {
+          // JSON parse edilemezse genel hata mesajı göster
+          toast.error('Giriş başarısız', {
+            description: result.error || 'Bilinmeyen bir hata oluştu.',
+          })
+        }
       } else {
         toast.success('Giriş başarılı!', {
           description: 'Yönlendiriliyorsunuz...',
@@ -43,8 +53,21 @@ export default function SignIn({ csrfToken }) {
         window.location.href = '/dashboard'
       }
     } catch (error) {
-      toast.error('Bir hata oluştu', {
-        description: 'Lütfen daha sonra tekrar deneyin.',
+      // Genel hata durumu
+      let errorMessage = 'Bir hata oluştu'
+      let errorDetail = 'Lütfen daha sonra tekrar deneyin.'
+
+      if (error instanceof Error) {
+        try {
+          const parsedError = JSON.parse(error.message)
+          errorDetail = parsedError.detail || errorDetail
+        } catch {
+          errorDetail = error.message
+        }
+      }
+
+      toast.error(errorMessage, {
+        description: errorDetail,
       })
     } finally {
       setIsLoading(false)
