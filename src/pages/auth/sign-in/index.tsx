@@ -4,7 +4,6 @@ import { Button } from '@/ui/button'
 import { cn } from '@/lib/utils'
 import { Label } from '@/ui/label'
 import { Input } from '@/ui/input'
-import { GalleryVerticalEnd } from 'lucide-react'
 import {
   Card,
   CardHeader,
@@ -371,7 +370,12 @@ export default function SignIn({}) {
                     className="flex flex-col items-center gap-2 font-medium"
                   >
                     <div className="flex h-8 w-8 items-center justify-center rounded-md">
-                      <GalleryVerticalEnd className="size-6" />
+                      <Image
+                        src="/assets/images/brand-images/quickestaiconblue.png"
+                        alt="Quickesta"
+                        width={32}
+                        height={32}
+                      />
                     </div>
                     <span className="sr-only">Quickesta</span>
                   </a>
