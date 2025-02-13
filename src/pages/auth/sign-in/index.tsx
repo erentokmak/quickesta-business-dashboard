@@ -441,7 +441,7 @@ export default function SignIn({}) {
         </a>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Tekrar Hoş Geldiniz</CardTitle>
+            <CardTitle className="text-xl">Hoş Geldiniz</CardTitle>
             <CardDescription>
               E-posta ve şifrenizi girerek devam edin
             </CardDescription>
