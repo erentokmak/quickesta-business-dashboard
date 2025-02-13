@@ -471,7 +471,7 @@ export default function SignIn({}) {
           <CardHeader className="text-center">
             <CardTitle className="text-xl">Tekrar Hoş Geldiniz</CardTitle>
             <CardDescription>
-              Apple veya Google hesabınızla giriş yapın
+              E-posta ve şifrenizi girerek devam edin
             </CardDescription>
           </CardHeader>
           <CardContent>
