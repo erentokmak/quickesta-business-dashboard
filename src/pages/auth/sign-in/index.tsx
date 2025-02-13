@@ -22,7 +22,7 @@ import {
 } from '@/ui/dialog'
 import { useIsMobile } from '@/hooks/Responsive'
 import { useToast } from '@/hooks/use-toast'
-
+import Image from 'next/image'
 export default function SignIn({}) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -430,7 +430,12 @@ export default function SignIn({}) {
       <div className="flex w-full max-w-sm flex-col gap-6">
         <a href="#" className="flex items-center gap-2 self-center font-medium">
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <GalleryVerticalEnd className="size-4" />
+            <Image
+              src="/assets/images/brand-images/quickestaiconwhite.png"
+              alt="Quickesta"
+              width={32}
+              height={32}
+            />
           </div>
           Quickesta
         </a>
