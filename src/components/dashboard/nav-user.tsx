@@ -1,19 +1,17 @@
-"use client"
+'use client'
 
 import {
-  BadgeCheck,
   Bell,
   ChevronsUpDown,
   CreditCard,
   LogOut,
-  Sparkles,
-} from "lucide-react"
+  Settings,
+  User,
+} from 'lucide-react'
+import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from '@/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,13 +20,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/ui/dropdown-menu"
+} from '@/ui/dropdown-menu'
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/ui/sidebar"
+} from '@/ui/sidebar'
+import { useToast } from '@/hooks/use-toast'
 
 export function NavUser({
   user,
@@ -40,6 +39,35 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const { toast } = useToast()
+  const router = useRouter()
+  const { data: session } = useSession()
+
+  const handleLogout = async () => {
+    try {
+      await signOut({
+        callbackUrl: '/auth/sign-in',
+        redirect: false,
+      })
+
+      toast({
+        title: 'Başarıyla çıkış yapıldı',
+        description: 'Giriş sayfasına yönlendiriliyorsunuz...',
+      })
+
+      router.push('/auth/sign-in')
+    } catch (error) {
+      console.error('Logout error:', error)
+      toast({
+        variant: 'destructive',
+        title: 'Çıkış yapılırken bir hata oluştu',
+        description: 'Lütfen daha sonra tekrar deneyiniz.',
+      })
+    }
+  }
+
+  // If no session, don't render the user menu
+  if (!session) return null
 
   return (
     <SidebarMenu>
@@ -52,7 +80,12 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
@@ -63,7 +96,7 @@ export function NavUser({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >
@@ -71,7 +104,12 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {user.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
@@ -81,30 +119,41 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
+              <DropdownMenuItem asChild>
+                <a href="/profile">
+                  <User className="text-muted-foreground" />
+                  Profil
+                </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+              <DropdownMenuItem asChild>
+                <a href="/settings">
+                  <Settings className="text-muted-foreground" />
+                  Hesap Ayarları
+                </a>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
+              <DropdownMenuItem asChild>
+                <a href="/billing">
+                  <CreditCard className="text-muted-foreground" />
+                  Fatura Yönetimi
+                </a>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
+              <DropdownMenuItem asChild>
+                <a href="/notifications">
+                  <Bell className="text-muted-foreground" />
+                  Bildirimler
+                </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="text-red-500 focus:text-red-500 focus:bg-red-50"
+            >
+              <LogOut className="text-red-500" />
+              Çıkış Yap
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

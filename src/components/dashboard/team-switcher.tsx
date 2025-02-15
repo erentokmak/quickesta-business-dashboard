@@ -1,5 +1,6 @@
-import * as React from "react"
-import { ChevronsUpDown, Plus } from "lucide-react"
+import * as React from 'react'
+import { ChevronsUpDown, Plus } from 'lucide-react'
+import Image from 'next/image'
 
 import {
   DropdownMenu,
@@ -9,13 +10,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/ui/dropdown-menu"
+} from '@/ui/dropdown-menu'
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/ui/sidebar"
+} from '@/ui/sidebar'
 
 export function TeamSwitcher({
   teams,
@@ -29,6 +30,19 @@ export function TeamSwitcher({
   const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
 
+  const getProductLogo = (productName: string) => {
+    switch (productName.toLowerCase()) {
+      case 'hesaplar merkezi':
+        return '/assets/images/brand-images/quickestaicon.jpg'
+      case 'qpay':
+        return '/assets/images/brand-images/qpay.png'
+      case 'qpos':
+        return '/assets/images/brand-images/qpos.png'
+      default:
+        return '/assets/images/brand-images/quickestablue.png'
+    }
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -38,8 +52,14 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-4" />
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden">
+                <Image
+                  src={getProductLogo(activeTeam.name)}
+                  alt={activeTeam.name}
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
@@ -53,11 +73,11 @@ export function TeamSwitcher({
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             align="start"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Teams
+              Quickesta Ürünleri
             </DropdownMenuLabel>
             {teams.map((team, index) => (
               <DropdownMenuItem
@@ -65,8 +85,14 @@ export function TeamSwitcher({
                 onClick={() => setActiveTeam(team)}
                 className="gap-2 p-2"
               >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <team.logo className="size-4 shrink-0" />
+                <div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden">
+                  <Image
+                    src={getProductLogo(team.name)}
+                    alt={team.name}
+                    width={24}
+                    height={24}
+                    className="object-contain"
+                  />
                 </div>
                 {team.name}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
@@ -77,7 +103,7 @@ export function TeamSwitcher({
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
               </div>
-              <div className="font-medium text-muted-foreground">Add team</div>
+              <div className="font-medium text-muted-foreground">Ürün Ekle</div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

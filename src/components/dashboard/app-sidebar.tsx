@@ -1,160 +1,183 @@
-import * as React from "react"
+import * as React from 'react'
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
+  CreditCard,
+  Users,
+  Building2,
   Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
+  Wallet,
+  FileText,
   Settings2,
-  SquareTerminal,
-} from "lucide-react"
+  BarChart3,
+  HelpCircle,
+  Bell,
+  Store,
+} from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
-import { NavMain } from "@/components/dashboard/nav-main"
-import { NavProjects } from "@/components/dashboard/nav-projects"
-import { NavUser } from "@/components/dashboard/nav-user"
-import { TeamSwitcher } from "@/components/dashboard/team-switcher"
+import { NavMain } from '@/components/dashboard/nav-main'
+import { NavProjects } from '@/components/dashboard/nav-projects'
+import { NavUser } from '@/components/dashboard/nav-user'
+import { TeamSwitcher } from '@/components/dashboard/team-switcher'
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/ui/sidebar"
+} from '@/ui/sidebar'
 
-// This is sample data.
-const data = {
+// This is the actual data for Quickesta Accounts Dashboard
+const getDefaultData = (sessionUser: any) => ({
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: `${sessionUser?.name || ''} ${sessionUser?.surname || ''}`.trim(),
+    email: sessionUser?.email || '',
+    avatar: '/avatars/default.jpg', // You might want to add avatar to your session data
   },
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      name: 'Hesaplar Merkezi',
+      logo: Store,
+      plan: 'Enterprise',
     },
     {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
+      name: 'QPay',
+      logo: Wallet,
+      plan: 'Business',
     },
     {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      name: 'QPos',
+      logo: CreditCard,
+      plan: 'Pro',
     },
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: 'Genel Bakış',
+      url: '/dashboard',
+      icon: BarChart3,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: 'İstatistikler',
+          url: '/dashboard/statistics',
         },
         {
-          title: "Starred",
-          url: "#",
+          title: 'Raporlar',
+          url: '/dashboard/reports',
         },
         {
-          title: "Settings",
-          url: "#",
+          title: 'Analiz',
+          url: '/dashboard/analysis',
         },
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
+      title: 'Hesap Yönetimi',
+      url: '/accounts',
+      icon: Users,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: 'Müşteriler',
+          url: '/accounts/customers',
         },
         {
-          title: "Explorer",
-          url: "#",
+          title: 'İşletmeler',
+          url: '/accounts/businesses',
         },
         {
-          title: "Quantum",
-          url: "#",
+          title: 'Kullanıcılar',
+          url: '/accounts/users',
         },
       ],
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
+      title: 'Finansal İşlemler',
+      url: '/transactions',
+      icon: CreditCard,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: 'Ödemeler',
+          url: '/transactions/payments',
         },
         {
-          title: "Get Started",
-          url: "#",
+          title: 'Transferler',
+          url: '/transactions/transfers',
         },
         {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
+          title: 'Faturalar',
+          url: '/transactions/invoices',
         },
       ],
     },
     {
-      title: "Settings",
-      url: "#",
+      title: 'Belgeler',
+      url: '/documents',
+      icon: FileText,
+      items: [
+        {
+          title: 'Sözleşmeler',
+          url: '/documents/contracts',
+        },
+        {
+          title: 'Raporlar',
+          url: '/documents/reports',
+        },
+        {
+          title: 'Faturalar',
+          url: '/documents/invoices',
+        },
+      ],
+    },
+    {
+      title: 'Ayarlar',
+      url: '/settings',
       icon: Settings2,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: 'Genel',
+          url: '/settings/general',
         },
         {
-          title: "Team",
-          url: "#",
+          title: 'Güvenlik',
+          url: '/settings/security',
         },
         {
-          title: "Billing",
-          url: "#",
+          title: 'Bildirimler',
+          url: '/settings/notifications',
         },
         {
-          title: "Limits",
-          url: "#",
+          title: 'Entegrasyonlar',
+          url: '/settings/integrations',
         },
       ],
     },
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      name: 'Müşteri Yönetimi',
+      url: '/projects/customer-management',
+      icon: Users,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      name: 'İşletme Yönetimi',
+      url: '/projects/business-management',
+      icon: Building2,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: 'Destek Merkezi',
+      url: '/projects/support',
+      icon: HelpCircle,
     },
   ],
-}
+})
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession()
+  const data = React.useMemo(
+    () => getDefaultData(session?.user),
+    [session?.user],
+  )
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
