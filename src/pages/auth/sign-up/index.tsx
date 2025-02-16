@@ -22,7 +22,7 @@ import { register } from '@/lib/api-v1/auth'
 import { extractCountryCode, formatPhoneNumber } from '@/utils/formatters/phone'
 import { ISignUpFormData, ISignUpFormErrors } from '@/types/auth'
 import { TermsAndPrivacy } from '@/components/auth/terms-and-privacy'
-import { validateSignUpForm } from '@/utils/validations/auth'
+import { validateSignUpFormFields } from '@/utils/validations/auth'
 
 export default function SignUp() {
   const [formData, setFormData] = useState<ISignUpFormData>({
@@ -42,23 +42,15 @@ export default function SignUp() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const validationErrors = validateSignUpForm({
-      name: formData.name,
-      surname: formData.surname,
-      email: formData.email,
-      password: formData.password,
-      phone: formData.mobileNumber,
-    })
-
-    const hasErrors = Object.values(validationErrors).some(
-      (error) => error !== null,
-    )
-    if (hasErrors) {
-      setErrors(validationErrors as ISignUpFormErrors)
+    const validation = validateSignUpFormFields(formData)
+    if (!validation.isValid) {
+      if (validation.fieldErrors) {
+        setErrors(validation.fieldErrors as ISignUpFormErrors)
+      }
       toast({
         variant: 'destructive',
         title: 'Form hatası',
-        description: 'Lütfen tüm alanları doğru şekilde doldurunuz.',
+        description: validation.error,
       })
       return
     }

@@ -155,3 +155,82 @@ export const validateSignUpForm = (
 
   return result
 }
+
+/**
+ * Checks if all required fields are filled
+ * @param formData - Form data to check
+ * @param fields - Required field names
+ * @returns Error message if any field is empty, null if all fields are filled
+ */
+export const validateRequiredFields = (
+  formData: Record<string, any>,
+  fields: string[],
+): string | null => {
+  const emptyFields = fields.filter(field => !formData[field])
+  return emptyFields.length > 0 ? 'Lütfen tüm alanları doldurunuz.' : null
+}
+
+/**
+ * Validates sign-in form data
+ * @param formData - Sign-in form data
+ * @returns Object containing validation errors
+ */
+export const validateSignInForm = (formData: { email: string; password: string }) => {
+  // Check required fields
+  const requiredError = validateRequiredFields(formData, ['email', 'password'])
+  if (requiredError) {
+    return {
+      isValid: false,
+      error: requiredError
+    }
+  }
+
+  // Validate email and password
+  try {
+    emailSchema.parse(formData.email)
+    passwordSchema.parse(formData.password)
+    return { isValid: true, error: null }
+  } catch (error: any) {
+    return {
+      isValid: false,
+      error: error.errors[0].message
+    }
+  }
+}
+
+/**
+ * Validates sign-up form data
+ * @param formData - Sign-up form data
+ * @returns Object containing validation errors
+ */
+export const validateSignUpFormFields = (formData: Record<string, any>) => {
+  // Check required fields
+  const requiredFields = ['name', 'surname', 'email', 'password', 'mobileNumber']
+  const requiredError = validateRequiredFields(formData, requiredFields)
+  if (requiredError) {
+    return {
+      isValid: false,
+      error: requiredError
+    }
+  }
+
+  // Validate all fields
+  const validationErrors = validateSignUpForm({
+    name: formData.name,
+    surname: formData.surname,
+    email: formData.email,
+    password: formData.password,
+    phone: formData.mobileNumber,
+  })
+
+  const hasErrors = Object.values(validationErrors).some(error => error !== null)
+  if (hasErrors) {
+    return {
+      isValid: false,
+      error: 'Lütfen tüm alanları doğru şekilde doldurunuz.',
+      fieldErrors: validationErrors
+    }
+  }
+
+  return { isValid: true, error: null }
+}

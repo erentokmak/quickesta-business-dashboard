@@ -17,7 +17,12 @@ import {
 import { useIsMobile } from '@/hooks/Responsive'
 import { useToast } from '@/hooks/use-toast'
 import { TermsAndPrivacy } from '@/components/auth/terms-and-privacy'
-import { emailSchema, passwordSchema } from '@/utils/validations/auth'
+import {
+  emailSchema,
+  passwordSchema,
+  validateField,
+  validateSignInForm,
+} from '@/utils/validations/auth'
 
 export default function SignIn() {
   const router = useRouter()
@@ -32,28 +37,6 @@ export default function SignIn() {
     email: '',
     password: '',
   })
-
-  const validateForm = () => {
-    const newErrors = {
-      email: '',
-      password: '',
-    }
-
-    try {
-      emailSchema.parse(formData.email)
-    } catch (error: any) {
-      newErrors.email = error.errors[0].message
-    }
-
-    try {
-      passwordSchema.parse(formData.password)
-    } catch (error: any) {
-      newErrors.password = error.errors[0].message
-    }
-
-    setErrors(newErrors)
-    return !newErrors.email && !newErrors.password
-  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -72,7 +55,16 @@ export default function SignIn() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!validateForm()) return
+
+    const validation = validateSignInForm(formData)
+    if (!validation.isValid) {
+      toast({
+        variant: 'destructive',
+        title: 'Form hatası',
+        description: validation.error,
+      })
+      return
+    }
 
     setIsLoading(true)
     try {
