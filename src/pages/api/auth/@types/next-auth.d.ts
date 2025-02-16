@@ -10,8 +10,8 @@ declare module 'next-auth' {
       surname: string
       phoneNumber: string
       username: string
-      access_token: string
-      refresh_token: string
+      accessToken: string
+      refreshToken: string
       expiresIn: number
       roles: string[]
       permissions: string[]
@@ -25,8 +25,8 @@ declare module 'next-auth' {
     surname: string
     phoneNumber: string
     username: string
-    access_token: string
-    refresh_token: string
+    accessToken: string
+    refreshToken: string
     expiresIn: number
     roles: string[]
     permissions: string[]
@@ -42,8 +42,8 @@ declare module 'next-auth/jwt' {
       surname: string
       phoneNumber: string
       username: string
-      access_token: string
-      refresh_token: string
+      accessToken: string
+      refreshToken: string
       expiresIn: number
       roles: string[]
       permissions: string[]

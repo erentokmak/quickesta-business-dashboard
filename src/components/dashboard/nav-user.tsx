@@ -27,6 +27,7 @@ import {
   useSidebar,
 } from '@/ui/sidebar'
 import { useToast } from '@/hooks/use-toast'
+import { logout } from '@/lib/api-v1/auth'
 
 export function NavUser({
   user,
@@ -46,6 +47,8 @@ export function NavUser({
       toast({
         title: 'Çıkış yapılıyor...',
       })
+
+      await logout(session?.user?.accessToken as string)
 
       await signOut({
         callbackUrl: '/auth/sign-in',

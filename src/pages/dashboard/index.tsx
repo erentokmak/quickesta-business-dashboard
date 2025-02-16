@@ -9,8 +9,12 @@ import {
 } from '@/ui/breadcrumb'
 import { Separator } from '@/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/ui/sidebar'
+import { useSession } from 'next-auth/react'
 
 export default function Page() {
+  const { data: session } = useSession()
+  console.log('session', session)
+
   return (
     <SidebarProvider>
       <AppSidebar />

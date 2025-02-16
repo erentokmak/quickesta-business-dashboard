@@ -25,7 +25,6 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
             password: credentials?.password || '',
             remember: credentials?.remember === 'true',
           })
-
           try {
             const response = await login(JSON.parse(data))
 
@@ -37,8 +36,8 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
                 surname: response.value.lastName,
                 phoneNumber: response.value.phoneNumber,
                 username: response.value.username,
-                access_token: response.value.jsonWebToken.accessToken,
-                refresh_token: response.value.refreshToken,
+                accessToken: response.value.jsonWebToken.accessToken,
+                refreshToken: response.value.refreshToken,
                 expiresIn: new Date(
                   response.value.jsonWebToken.expires,
                 ).getTime(),
