@@ -78,8 +78,6 @@ export default function SignIn() {
         })
         return
       }
-
-      router.push('/dashboard')
     } catch (error) {
       toast({
         title: 'Hata',

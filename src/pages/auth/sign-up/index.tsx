@@ -120,8 +120,6 @@ export default function SignUp() {
           })
           return
         }
-
-        router.push('/dashboard')
       } else {
         toast({
           variant: 'destructive',
