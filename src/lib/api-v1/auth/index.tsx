@@ -1,7 +1,7 @@
 import axiosInstance from '../client'
-import { formatPhoneNumber } from '@/utils/formatters/phone'
+import { ILoginRequest, IRegisterRequest, IAuthResponse } from '@/types/auth'
 
-export const login = async (data: any) => {
+export const login = async (data: ILoginRequest): Promise<IAuthResponse> => {
   const response = await axiosInstance.post(
     `/authentication/identity/v1/identity/login`,
     data,
@@ -9,26 +9,20 @@ export const login = async (data: any) => {
   return response.data
 }
 
-export const register = async (data: {
+interface RegisterData {
   name: string
   surname: string
   email: string
   password: string
+  confirmPassword: string
   mobileNumber: string
   countryCode: number
-}) => {
-  const registerData = {
-    ...data,
-    mobileNumber: formatPhoneNumber(data.mobileNumber, data.countryCode),
-    confirmPassword: data.password,
-  }
+}
 
-  // Log the formatted data
-  console.log('Registering with data:', registerData)
-
+export const register = async (data: IRegisterRequest): Promise<IAuthResponse> => {
   const response = await axiosInstance.post(
     `/authentication/identity/v1/user/registerUser`,
-    registerData,
+    data,
   )
   return response.data
 }

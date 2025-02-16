@@ -27,27 +27,11 @@ import {
 import { useIsMobile } from '@/hooks/Responsive'
 import { useToast } from '@/hooks/use-toast'
 import { register } from '@/lib/api-v1/auth'
-import { extractCountryCode } from '@/utils/formatters/phone'
-
-interface FormData {
-  name: string
-  surname: string
-  email: string
-  password: string
-  mobileNumber: string
-  countryCode: number
-}
-
-interface FormErrors {
-  name?: string
-  surname?: string
-  email?: string
-  password?: string
-  phone?: string
-}
+import { extractCountryCode, formatPhoneNumber } from '@/utils/formatters/phone'
+import { ISignUpFormData, ISignUpFormErrors } from '@/types/auth'
 
 export default function SignUp() {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ISignUpFormData>({
     name: '',
     surname: '',
     email: '',
@@ -55,14 +39,14 @@ export default function SignUp() {
     mobileNumber: '',
     countryCode: 90,
   })
-  const [errors, setErrors] = useState<FormErrors>({})
+  const [errors, setErrors] = useState<ISignUpFormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const isMobile = useIsMobile()
   const { toast } = useToast()
   const router = useRouter()
 
-  const validateForm = (data: FormData): FormErrors => {
-    const errors: FormErrors = {}
+  const validateForm = (data: ISignUpFormData): ISignUpFormErrors => {
+    const errors: ISignUpFormErrors = {}
 
     if (!data.name || data.name.length < 2) {
       errors.name = 'Ad en az 2 karakter olmalıdır'
@@ -101,7 +85,16 @@ export default function SignUp() {
     setIsLoading(true)
 
     try {
-      const response = await register(formData)
+      const registerData = {
+        ...formData,
+        mobileNumber: formatPhoneNumber(
+          formData.mobileNumber,
+          formData.countryCode,
+        ),
+        confirmPassword: formData.password,
+      }
+
+      const response = await register(registerData)
 
       if (response.isSuccess) {
         toast({
@@ -589,7 +582,7 @@ export default function SignUp() {
 
             {renderForm()}
 
-            <div className="text-balance text-center text-xs text-muted-foreground">
+            <div className="text-center text-xs text-muted-foreground">
               Devam ederek <TermsDialog /> ve <PrivacyDialog />
               &apos;nı kabul etmiş olursunuz.
             </div>
@@ -621,7 +614,7 @@ export default function SignUp() {
           </CardHeader>
           <CardContent>{renderForm()}</CardContent>
         </Card>
-        <div className="text-balance text-center text-xs text-muted-foreground">
+        <div className="text-center text-xs text-muted-foreground">
           Devam ederek <TermsDialog /> ve <PrivacyDialog />
           &apos;nı kabul etmiş olursunuz.
         </div>

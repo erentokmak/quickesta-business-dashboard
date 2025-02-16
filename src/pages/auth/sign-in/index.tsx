@@ -423,7 +423,7 @@ export default function SignIn({}) {
                 </div>
               </div>
             </form>
-            <div className="text-balance text-center text-xs text-muted-foreground">
+            <div className="text-center text-xs text-muted-foreground">
               Devam ederek <TermsDialog /> ve <PrivacyDialog />
               &apos;nı kabul etmiş olursunuz.
             </div>
@@ -506,7 +506,7 @@ export default function SignIn({}) {
             </form>
           </CardContent>
         </Card>
-        <div className="text-balance text-center text-xs text-muted-foreground">
+        <div className="text-center text-xs text-muted-foreground">
           Devam ederek <TermsDialog /> ve <PrivacyDialog />
           &apos;nı kabul etmiş olursunuz.
         </div>
