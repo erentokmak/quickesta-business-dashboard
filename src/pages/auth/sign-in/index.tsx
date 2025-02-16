@@ -18,12 +18,7 @@ import {
 import { useIsMobile } from '@/hooks/Responsive'
 import { useToast } from '@/hooks/use-toast'
 import { TermsAndPrivacy } from '@/components/auth/terms-and-privacy'
-import {
-  emailSchema,
-  passwordSchema,
-  validateField,
-  validateSignInForm,
-} from '@/utils/validations/auth'
+import { validateSignInForm } from '@/utils/validations/auth'
 
 export default function SignIn() {
   const router = useRouter()

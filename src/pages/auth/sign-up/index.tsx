@@ -73,7 +73,7 @@ export default function SignUp() {
       if (response.isSuccess) {
         toast({
           title: 'Kayıt başarılı!',
-          description: 'Giriş yapabilirsiniz.',
+          description: 'Yönlendiriliyorsunuz...',
         })
 
         const signInResult = await signIn('credentials', {
