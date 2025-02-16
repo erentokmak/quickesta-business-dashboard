@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import { Button } from '@/ui/button'
 import { cn } from '@/lib/utils'
@@ -140,9 +141,9 @@ export default function SignIn() {
       {!isMobile && (
         <div className="text-center text-sm">
           Hesabınız yok mu?{' '}
-          <a href="/auth/sign-up" className="underline underline-offset-4">
+          <Link href="/auth/sign-up" className="underline underline-offset-4">
             Kayıt Ol
-          </a>
+          </Link>
         </div>
       )}
     </form>
@@ -166,12 +167,12 @@ export default function SignIn() {
               </h1>
               <div className="text-center text-sm">
                 Hesabınız yok mu?{' '}
-                <a
+                <Link
                   href="/auth/sign-up"
                   className="underline underline-offset-4"
                 >
                   Kayıt Ol
-                </a>
+                </Link>
               </div>
             </div>
 
