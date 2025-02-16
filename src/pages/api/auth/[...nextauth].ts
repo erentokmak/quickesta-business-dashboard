@@ -26,7 +26,6 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
             remember: credentials?.remember === 'true',
           })
 
-          console.log(data)
           try {
             const response = await login(JSON.parse(data))
 
