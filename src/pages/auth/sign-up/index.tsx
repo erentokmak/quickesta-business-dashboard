@@ -40,6 +40,35 @@ export default function SignUp() {
   const { toast } = useToast()
   const router = useRouter()
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+    if (errors[name as keyof ISignUpFormErrors]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }))
+    }
+  }
+
+  const handlePhoneChange = (value: string, data: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      countryCode: extractCountryCode(data.dialCode),
+      mobileNumber: value,
+    }))
+    if (errors.phone) {
+      setErrors((prev) => ({ ...prev, phone: '' }))
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSubmit(e as any)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -108,35 +137,6 @@ export default function SignUp() {
       })
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-    if (errors[name as keyof ISignUpFormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }))
-    }
-  }
-
-  const handlePhoneChange = (value: string, data: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      countryCode: extractCountryCode(data.dialCode),
-      mobileNumber: value,
-    }))
-    if (errors.phone) {
-      setErrors((prev) => ({ ...prev, phone: '' }))
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      handleSubmit(e as any)
     }
   }
 
