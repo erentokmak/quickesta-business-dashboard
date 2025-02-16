@@ -1,9 +1,19 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+
 import { Button } from '@/ui/button'
 import { cn } from '@/lib/utils'
 import { Label } from '@/ui/label'
 import { Input } from '@/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/ui/select'
 import {
   Card,
   CardHeader,
@@ -21,48 +31,95 @@ import {
 } from '@/ui/dialog'
 import { useIsMobile } from '@/hooks/Responsive'
 import { useToast } from '@/hooks/use-toast'
-import Image from 'next/image'
-export default function SignIn({}) {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+import { register } from '@/lib/api-v1/auth'
+
+// Country codes data
+const countryCodes = [
+  { code: 90, label: 'Türkiye (+90)' },
+  { code: 1, label: 'USA (+1)' },
+  { code: 44, label: 'UK (+44)' },
+  { code: 49, label: 'Germany (+49)' },
+  // Add more as needed
+]
+
+export default function SignUp() {
+  const [formData, setFormData] = useState({
+    name: '',
+    surname: '',
+    email: '',
+    password: '',
+    mobileNumber: '',
+    countryCode: 90, // Default to Turkey
+  })
   const [isLoading, setIsLoading] = useState(false)
   const isMobile = useIsMobile()
   const { toast } = useToast()
+  const router = useRouter()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        username,
-        password,
-      })
+      const response = await register(formData)
 
-      if (result?.error) {
-        const errorData = JSON.parse(result.error)
+      if (response.isSuccess) {
+        toast({
+          title: 'Kayıt başarılı!',
+          description: 'Giriş yapabilirsiniz.',
+        })
+
+        // Automatically sign in after successful registration
+        const signInResult = await signIn('credentials', {
+          redirect: false,
+          username: formData.email,
+          password: formData.password,
+        })
+
+        if (signInResult?.error) {
+          const errorData = JSON.parse(signInResult.error)
+          toast({
+            variant: 'destructive',
+            title: errorData.message,
+            description: errorData.detail,
+          })
+          return
+        }
+
+        toast({
+          title: 'Giriş başarılı!',
+          description: 'Ana sayfaya yönlendiriliyorsunuz...',
+        })
+
+        router.push('/dashboard')
+      } else {
         toast({
           variant: 'destructive',
-          title: errorData.message,
-          description: errorData.detail,
+          title: 'Kayıt başarısız',
+          description: response.error || 'Bir hata oluştu.',
         })
-        return
       }
-
-      toast({
-        title: 'Giriş başarılı!',
-        description: 'Ana sayfaya yönlendiriliyorsunuz...',
-      })
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Bir sorun oluştu',
-        description: 'Lütfen daha sonra tekrar deneyiniz.',
+        description: error.message || 'Lütfen daha sonra tekrar deneyiniz.',
       })
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleInputChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | { target: { name: string; value: any } },
+  ) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
   }
 
   const TermsDialog = () => (
@@ -356,7 +413,7 @@ export default function SignIn({}) {
     </Dialog>
   )
 
-  // Mobil tasarım
+  // Mobile design
   if (isMobile) {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
@@ -380,24 +437,52 @@ export default function SignIn({}) {
                     <span className="sr-only">Quickesta</span>
                   </a>
                   <h1 className="text-xl font-bold">
-                    Quickesta&apos;ya Hoş Geldiniz
+                    Quickesta&apos;ya Kayıt Olun
                   </h1>
                   <div className="text-center text-sm">
-                    Hesabınız yok mu?{' '}
-                    <a href="#" className="underline underline-offset-4">
-                      Kayıt Ol
+                    Zaten hesabınız var mı?{' '}
+                    <a
+                      href="/auth/sign-in"
+                      className="underline underline-offset-4"
+                    >
+                      Giriş Yap
                     </a>
                   </div>
                 </div>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-2">
+                    <Label htmlFor="name">Ad</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      type="text"
+                      placeholder="Adınız"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="surname">Soyad</Label>
+                    <Input
+                      id="surname"
+                      name="surname"
+                      type="text"
+                      placeholder="Soyadınız"
+                      value={formData.surname}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
                     <Label htmlFor="email">E-posta</Label>
                     <Input
-                      id="username"
+                      id="email"
+                      name="email"
                       type="email"
                       placeholder="ornek@mail.com"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      value={formData.email}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -405,15 +490,56 @@ export default function SignIn({}) {
                     <Label htmlFor="password">Şifre</Label>
                     <Input
                       id="password"
+                      name="password"
                       type="password"
                       placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      value={formData.password}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
+                  <div className="grid gap-2">
+                    <Label>Telefon</Label>
+                    <div className="flex gap-2">
+                      <Select
+                        name="countryCode"
+                        value={formData.countryCode.toString()}
+                        onValueChange={(value) =>
+                          handleInputChange({
+                            target: {
+                              name: 'countryCode',
+                              value: parseInt(value),
+                            },
+                          })
+                        }
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder="Ülke Kodu" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countryCodes.map((country) => (
+                            <SelectItem
+                              key={country.code}
+                              value={country.code.toString()}
+                            >
+                              {country.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        id="mobileNumber"
+                        name="mobileNumber"
+                        type="tel"
+                        placeholder="5XX XXX XX XX"
+                        value={formData.mobileNumber}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                  </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                    {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
                   </Button>
                 </div>
               </div>
@@ -428,7 +554,7 @@ export default function SignIn({}) {
     )
   }
 
-  // Desktop tasarım
+  // Desktop design
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -445,9 +571,9 @@ export default function SignIn({}) {
         </a>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Hoş Geldiniz</CardTitle>
+            <CardTitle className="text-xl">Hesap Oluşturun</CardTitle>
             <CardDescription>
-              E-posta ve şifrenizi girerek devam edin
+              Bilgilerinizi girerek hemen başlayın
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -455,43 +581,104 @@ export default function SignIn({}) {
               <div className="grid gap-6">
                 <div className="grid gap-6">
                   <div className="grid gap-2">
-                    <Label htmlFor="email">E-posta</Label>
+                    <Label htmlFor="name">Ad</Label>
                     <Input
-                      id="username"
-                      type="email"
-                      placeholder="ornek@mail.com"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
+                      id="name"
+                      name="name"
+                      type="text"
+                      placeholder="Adınız"
+                      value={formData.name}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
                   <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor="password">Şifre</Label>
-                      <a
-                        href="#"
-                        className="ml-auto text-sm underline-offset-4 hover:underline"
-                      >
-                        Şifremi unuttum
-                      </a>
-                    </div>
+                    <Label htmlFor="surname">Soyad</Label>
                     <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      id="surname"
+                      name="surname"
+                      type="text"
+                      placeholder="Soyadınız"
+                      value={formData.surname}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="email">E-posta</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="ornek@mail.com"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="password">Şifre</Label>
+                    <Input
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Telefon</Label>
+                    <div className="flex gap-2">
+                      <Select
+                        name="countryCode"
+                        value={formData.countryCode.toString()}
+                        onValueChange={(value) =>
+                          handleInputChange({
+                            target: {
+                              name: 'countryCode',
+                              value: parseInt(value),
+                            },
+                          })
+                        }
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder="Ülke Kodu" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countryCodes.map((country) => (
+                            <SelectItem
+                              key={country.code}
+                              value={country.code.toString()}
+                            >
+                              {country.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        id="mobileNumber"
+                        name="mobileNumber"
+                        type="tel"
+                        placeholder="5XX XXX XX XX"
+                        value={formData.mobileNumber}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                  </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                    {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
                   </Button>
                 </div>
                 <div className="text-center text-sm">
-                  Hesabınız yok mu?{' '}
-                  <a href="#" className="underline underline-offset-4">
-                    Kayıt Ol
+                  Zaten hesabınız var mı?{' '}
+                  <a
+                    href="/auth/sign-in"
+                    className="underline underline-offset-4"
+                  >
+                    Giriş Yap
                   </a>
                 </div>
               </div>

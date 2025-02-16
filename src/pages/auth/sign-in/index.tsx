@@ -22,6 +22,8 @@ import {
 import { useIsMobile } from '@/hooks/Responsive'
 import { useToast } from '@/hooks/use-toast'
 import Image from 'next/image'
+import Link from 'next/link'
+
 export default function SignIn({}) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -384,9 +386,12 @@ export default function SignIn({}) {
                   </h1>
                   <div className="text-center text-sm">
                     Hesabınız yok mu?{' '}
-                    <a href="#" className="underline underline-offset-4">
+                    <Link
+                      href="/auth/sign-up"
+                      className="underline underline-offset-4"
+                    >
                       Kayıt Ol
-                    </a>
+                    </Link>
                   </div>
                 </div>
                 <div className="flex flex-col gap-6">
@@ -490,9 +495,12 @@ export default function SignIn({}) {
                 </div>
                 <div className="text-center text-sm">
                   Hesabınız yok mu?{' '}
-                  <a href="#" className="underline underline-offset-4">
+                  <Link
+                    href="/auth/sign-up"
+                    className="underline underline-offset-4"
+                  >
                     Kayıt Ol
-                  </a>
+                  </Link>
                 </div>
               </div>
             </form>
