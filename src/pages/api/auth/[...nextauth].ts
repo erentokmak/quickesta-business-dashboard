@@ -15,9 +15,9 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
       CredentialsProvider({
         name: 'Credentials',
         credentials: {
-          email: { label: 'Email', type: 'text' },
-          password: { label: 'Password', type: 'password' },
-          remember: { label: 'Remember me', type: 'checkbox' },
+          email: { label: 'E-posta', type: 'text' },
+          password: { label: 'Şifre', type: 'password' },
+          remember: { label: 'Beni hatırla', type: 'checkbox' },
         },
         authorize: async (credentials) => {
           const data = JSON.stringify({
