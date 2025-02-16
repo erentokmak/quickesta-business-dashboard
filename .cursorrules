@@ -553,7 +553,7 @@ export interface QueryNameResponse {
    ```typescript
    function isUser(value: unknown): value is IUser {
      return (
-       typeof value === 'object' &&
+       typeof value == 'object' &&
        value !== null &&
        'id' in value &&
        'name' in value
@@ -834,7 +834,7 @@ export interface QueryNameResponse {
      let result: number | null = null
      
      return (value: number): number => {
-       if (result === null) {
+       if (result == null) {
          result = /* complex calculation */
        }
        return result

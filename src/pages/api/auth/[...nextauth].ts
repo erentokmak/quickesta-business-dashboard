@@ -56,14 +56,14 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
               const detail = errorData.detail
 
               // Hata durumlarına göre özel mesajlar
-              if (status === 404) {
+              if (status == 404) {
                 throw new Error(
                   JSON.stringify({
                     message: 'Kullanıcı bulunamadı',
                     detail: detail,
                   }),
                 )
-              } else if (status === 400) {
+              } else if (status == 400) {
                 throw new Error(
                   JSON.stringify({
                     message: 'Şifre veya kullanıcı adı hatalı',
