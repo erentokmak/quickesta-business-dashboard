@@ -15,19 +15,20 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
       CredentialsProvider({
         name: 'Credentials',
         credentials: {
-          username: { label: 'Username', type: 'text' },
+          email: { label: 'Email', type: 'text' },
           password: { label: 'Password', type: 'password' },
           remember: { label: 'Remember me', type: 'checkbox' },
         },
         authorize: async (credentials) => {
           const data = JSON.stringify({
-            userNameOrEmail: credentials?.username || '',
+            userNameOrEmail: credentials?.email || '',
             password: credentials?.password || '',
             remember: credentials?.remember === 'true',
           })
 
+          console.log(data)
           try {
-            const response = await login(data)
+            const response = await login(JSON.parse(data))
 
             if (response.isSuccess) {
               return {

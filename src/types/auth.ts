@@ -50,6 +50,7 @@ export interface ISignUpFormErrors {
  * Auth API response interface
  */
 export interface IAuthResponse {
+  value: any
   isSuccess: boolean
   error?: string
   data?: any
