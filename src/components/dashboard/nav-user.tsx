@@ -3,7 +3,6 @@
 import {
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
   Settings,
   User,
@@ -34,7 +33,7 @@ import {
 } from '@/ui/sidebar'
 import { useToast } from '@/hooks/use-toast'
 import { logout } from '@/lib/api-v1/auth'
-
+import Link from 'next/link'
 export function NavUser({
   user,
 }: {
@@ -125,36 +124,15 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <a href="/profile">
+                <Link href="/settings/profile">
                   <User className="text-muted-foreground" />
                   Profil
-                </a>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem asChild>
-                <a href="/settings">
-                  <Settings className="text-muted-foreground" />
-                  Hesap Ayarları
-                </a>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <a href="/billing">
-                  <CreditCard className="text-muted-foreground" />
-                  Fatura Yönetimi
-                </a>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <a href="/notifications">
-                  <Bell className="text-muted-foreground" />
-                  Bildirimler
-                </a>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                  <Moon className="absolute mr-2 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <Sun className=" h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                   Tema
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>

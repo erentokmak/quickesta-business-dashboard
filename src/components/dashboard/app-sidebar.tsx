@@ -11,11 +11,14 @@ import {
   HelpCircle,
   Bell,
   Store,
+  User,
+  Shield,
+  Smartphone,
+  Home,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { NavMain } from '@/components/dashboard/nav-main'
-import { NavProjects } from '@/components/dashboard/nav-projects'
 import { NavUser } from '@/components/dashboard/nav-user'
 import { TeamSwitcher } from '@/components/dashboard/team-switcher'
 import {
@@ -31,23 +34,13 @@ const getDefaultData = (sessionUser: any) => ({
   user: {
     name: `${sessionUser?.name || ''} ${sessionUser?.surname || ''}`.trim(),
     email: sessionUser?.email || '',
-    avatar: '/avatars/default.jpg', // You might want to add avatar to your session data
+    avatar: '/avatars/default.jpg',
   },
   teams: [
     {
       name: 'Hesaplar Merkezi',
       logo: Store,
       plan: 'Enterprise',
-    },
-    {
-      name: 'QPay',
-      logo: Wallet,
-      plan: 'Business',
-    },
-    {
-      name: 'QPos',
-      logo: CreditCard,
-      plan: 'Pro',
     },
   ],
   navMain: [
@@ -58,115 +51,29 @@ const getDefaultData = (sessionUser: any) => ({
       isActive: true,
       items: [
         {
-          title: 'İstatistikler',
-          url: '/dashboard/statistics',
+          title: 'Anasayfa',
+          url: '/dashboard',
         },
         {
-          title: 'Raporlar',
-          url: '/dashboard/reports',
-        },
-        {
-          title: 'Analiz',
-          url: '/dashboard/analysis',
+          title: 'Profil Ayarları',
+          url: '/settings/profile',
         },
       ],
     },
     {
-      title: 'Hesap Yönetimi',
-      url: '/accounts',
-      icon: Users,
+      title: 'Güvenlik',
+      url: '/settings/security',
+      icon: Shield,
       items: [
         {
-          title: 'Müşteriler',
-          url: '/accounts/customers',
-        },
-        {
-          title: 'İşletmeler',
-          url: '/accounts/businesses',
-        },
-        {
-          title: 'Kullanıcılar',
-          url: '/accounts/users',
-        },
-      ],
-    },
-    {
-      title: 'Finansal İşlemler',
-      url: '/transactions',
-      icon: CreditCard,
-      items: [
-        {
-          title: 'Ödemeler',
-          url: '/transactions/payments',
-        },
-        {
-          title: 'Transferler',
-          url: '/transactions/transfers',
-        },
-        {
-          title: 'Faturalar',
-          url: '/transactions/invoices',
-        },
-      ],
-    },
-    {
-      title: 'Belgeler',
-      url: '/documents',
-      icon: FileText,
-      items: [
-        {
-          title: 'Sözleşmeler',
-          url: '/documents/contracts',
-        },
-        {
-          title: 'Raporlar',
-          url: '/documents/reports',
-        },
-        {
-          title: 'Faturalar',
-          url: '/documents/invoices',
-        },
-      ],
-    },
-    {
-      title: 'Ayarlar',
-      url: '/settings',
-      icon: Settings2,
-      items: [
-        {
-          title: 'Genel',
-          url: '/settings/general',
-        },
-        {
-          title: 'Güvenlik',
+          title: 'Güvenlik Ayarları',
           url: '/settings/security',
         },
         {
-          title: 'Bildirimler',
-          url: '/settings/notifications',
-        },
-        {
-          title: 'Entegrasyonlar',
-          url: '/settings/integrations',
+          title: 'Cihaz Yönetimi',
+          url: '/settings/devices',
         },
       ],
-    },
-  ],
-  projects: [
-    {
-      name: 'Müşteri Yönetimi',
-      url: '/projects/customer-management',
-      icon: Users,
-    },
-    {
-      name: 'İşletme Yönetimi',
-      url: '/projects/business-management',
-      icon: Building2,
-    },
-    {
-      name: 'Destek Merkezi',
-      url: '/projects/support',
-      icon: HelpCircle,
     },
   ],
 })
@@ -185,7 +92,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
