@@ -14,7 +14,6 @@ import { signOut, useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/avatar'
-import { Button } from '@/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -159,13 +158,13 @@ export function NavUser({
                   Tema
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem onClick={() => setTheme("light")}>
+                  <DropdownMenuItem onClick={() => setTheme('light')}>
                     Açık
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  <DropdownMenuItem onClick={() => setTheme('dark')}>
                     Koyu
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme("system")}>
+                  <DropdownMenuItem onClick={() => setTheme('system')}>
                     Sistem
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
