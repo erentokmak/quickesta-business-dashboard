@@ -9,7 +9,6 @@ import {
   User,
 } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/avatar'
 import {
@@ -40,22 +39,18 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const { toast } = useToast()
-  const router = useRouter()
   const { data: session } = useSession()
 
   const handleLogout = async () => {
     try {
+      toast({
+        title: 'Çıkış yapılıyor...',
+      })
+
       await signOut({
         callbackUrl: '/auth/sign-in',
-        redirect: false,
+        redirect: true,
       })
-
-      toast({
-        title: 'Başarıyla çıkış yapıldı',
-        description: 'Giriş sayfasına yönlendiriliyorsunuz...',
-      })
-
-      router.push('/auth/sign-in')
     } catch (error) {
       console.error('Logout error:', error)
       toast({
