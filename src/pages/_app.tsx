@@ -14,6 +14,7 @@ import client from '@/lib/apollo-client'
 // Component imports
 import { Base, Main } from '@/components/layout'
 import { Toaster } from '@/ui/toaster'
+import { ThemeProvider } from '@/components/layout/theme-provider'
 
 // Types
 type AppProps = {
@@ -51,9 +52,15 @@ function AppContent({ Component, pageProps }: AppProps) {
   if (status === 'loading') return null
 
   return (
-    <ApolloProvider client={client}>
-      {session ? (
-        <Base>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <ApolloProvider client={client}>
+        {session ? (
+          <Base>
           <Main>
             <Component {...pageProps} />
           </Main>
@@ -61,8 +68,9 @@ function AppContent({ Component, pageProps }: AppProps) {
       ) : (
         <Component {...pageProps} />
       )}
-      <Toaster />
-    </ApolloProvider>
+        <Toaster />
+      </ApolloProvider>
+    </ThemeProvider>
   )
 }
 
