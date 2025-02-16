@@ -177,7 +177,7 @@ export function TermsAndPrivacy() {
             className="w-full sm:w-auto"
             onClick={() => setTermsOpen(false)}
           >
-            Onaylıyorum
+            Okudum
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -316,7 +316,7 @@ export function TermsAndPrivacy() {
             className="w-full sm:w-auto"
             onClick={() => setPrivacyOpen(false)}
           >
-            Onaylıyorum
+            Okudum
           </Button>
         </DialogFooter>
       </DialogContent>
