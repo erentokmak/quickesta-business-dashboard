@@ -137,12 +137,14 @@ export default function SignIn() {
         {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
       </Button>
 
-      <div className="text-center text-sm">
-        Hesabınız yok mu?{' '}
-        <a href="/auth/sign-up" className="underline underline-offset-4">
-          Kayıt Ol
-        </a>
-      </div>
+      {!isMobile && (
+        <div className="text-center text-sm">
+          Hesabınız yok mu?{' '}
+          <a href="/auth/sign-up" className="underline underline-offset-4">
+            Kayıt Ol
+          </a>
+        </div>
+      )}
     </form>
   )
 

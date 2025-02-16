@@ -244,12 +244,14 @@ export default function SignUp() {
         {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
       </Button>
 
-      <div className="text-center text-sm">
-        Zaten hesabınız var mı?{' '}
-        <a href="/auth/sign-in" className="underline underline-offset-4">
-          Giriş Yap
-        </a>
-      </div>
+      {!isMobile && (
+        <div className="text-center text-sm">
+          Zaten hesabınız var mı?{' '}
+          <a href="/auth/sign-in" className="underline underline-offset-4">
+            Giriş Yap
+          </a>
+        </div>
+      )}
     </form>
   )
 
