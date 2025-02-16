@@ -2,18 +2,14 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { z } from 'zod'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
 import { Button } from '@/ui/button'
 import { cn } from '@/lib/utils'
 import { Label } from '@/ui/label'
 import { Input } from '@/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/ui/select'
 import {
   Card,
   CardHeader,
@@ -35,12 +31,47 @@ import { register } from '@/lib/api-v1/auth'
 
 // Country codes data
 const countryCodes = [
-  { code: 90, label: 'Türkiye (+90)' },
-  { code: 1, label: 'USA (+1)' },
-  { code: 44, label: 'UK (+44)' },
-  { code: 49, label: 'Germany (+49)' },
-  // Add more as needed
+  { code: 90, label: 'Türkiye', flag: '🇹🇷', dialCode: '+90' },
+  { code: 1, label: 'USA', flag: '🇺🇸', dialCode: '+1' },
+  { code: 44, label: 'UK', flag: '🇬🇧', dialCode: '+44' },
+  { code: 49, label: 'Germany', flag: '🇩🇪', dialCode: '+49' },
+  { code: 33, label: 'France', flag: '🇫🇷', dialCode: '+33' },
+  { code: 39, label: 'Italy', flag: '🇮🇹', dialCode: '+39' },
+  { code: 34, label: 'Spain', flag: '🇪🇸', dialCode: '+34' },
+  { code: 31, label: 'Netherlands', flag: '🇳🇱', dialCode: '+31' },
+  { code: 46, label: 'Sweden', flag: '🇸🇪', dialCode: '+46' },
+  { code: 47, label: 'Norway', flag: '🇳🇴', dialCode: '+47' },
 ]
+
+// Form validation schema
+const signUpSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Ad en az 2 karakter olmalıdır')
+    .max(50, 'Ad en fazla 50 karakter olabilir')
+    .regex(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, 'Ad sadece harflerden oluşmalıdır'),
+  surname: z
+    .string()
+    .min(2, 'Soyad en az 2 karakter olmalıdır')
+    .max(50, 'Soyad en fazla 50 karakter olabilir')
+    .regex(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, 'Soyad sadece harflerden oluşmalıdır'),
+  email: z
+    .string()
+    .email('Geçerli bir e-posta adresi giriniz')
+    .min(5, 'E-posta en az 5 karakter olmalıdır')
+    .max(100, 'E-posta en fazla 100 karakter olabilir'),
+  password: z
+    .string()
+    .min(8, 'Şifre en az 8 karakter olmalıdır')
+    .max(100, 'Şifre en fazla 100 karakter olabilir')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      'Şifre en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir',
+    ),
+  phone: z.string().min(10, 'Geçerli bir telefon numarası giriniz'),
+})
+
+type SignUpFormValues = z.infer<typeof signUpSchema>
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -69,7 +100,6 @@ export default function SignUp() {
           description: 'Giriş yapabilirsiniz.',
         })
 
-        // Automatically sign in after successful registration
         const signInResult = await signIn('credentials', {
           redirect: false,
           username: formData.email,
@@ -119,6 +149,14 @@ export default function SignUp() {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }))
+  }
+
+  const handlePhoneChange = (value: string, data: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      countryCode: parseInt(data.dialCode),
+      mobileNumber: value, // Keep the full value including country code
     }))
   }
 
@@ -419,37 +457,38 @@ export default function SignUp() {
       <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
         <div className="w-full max-w-sm">
           <div className={cn('flex flex-col gap-6')}>
+            <div className="flex flex-col items-center gap-2">
+              <a
+                href="#"
+                className="flex flex-col items-center gap-2 font-medium"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-md">
+                  <Image
+                    src="/assets/images/brand-images/quickestaiconblue.png"
+                    alt="Quickesta"
+                    width={32}
+                    height={32}
+                  />
+                </div>
+                <span className="sr-only">Quickesta</span>
+              </a>
+              <h1 className="text-xl font-bold">
+                Quickesta&apos;ya Kayıt Olun
+              </h1>
+              <div className="text-center text-sm">
+                Zaten hesabınız var mı?{' '}
+                <a
+                  href="/auth/sign-in"
+                  className="underline underline-offset-4"
+                >
+                  Giriş Yap
+                </a>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit}>
               <div className="flex flex-col gap-6">
-                <div className="flex flex-col items-center gap-2">
-                  <a
-                    href="#"
-                    className="flex flex-col items-center gap-2 font-medium"
-                  >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md">
-                      <Image
-                        src="/assets/images/brand-images/quickestaiconblue.png"
-                        alt="Quickesta"
-                        width={32}
-                        height={32}
-                      />
-                    </div>
-                    <span className="sr-only">Quickesta</span>
-                  </a>
-                  <h1 className="text-xl font-bold">
-                    Quickesta&apos;ya Kayıt Olun
-                  </h1>
-                  <div className="text-center text-sm">
-                    Zaten hesabınız var mı?{' '}
-                    <a
-                      href="/auth/sign-in"
-                      className="underline underline-offset-4"
-                    >
-                      Giriş Yap
-                    </a>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-6">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="name">Ad</Label>
                     <Input
@@ -474,76 +513,62 @@ export default function SignUp() {
                       required
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">E-posta</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="ornek@mail.com"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="password">Şifre</Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Telefon</Label>
-                    <div className="flex gap-2">
-                      <Select
-                        name="countryCode"
-                        value={formData.countryCode.toString()}
-                        onValueChange={(value) =>
-                          handleInputChange({
-                            target: {
-                              name: 'countryCode',
-                              value: parseInt(value),
-                            },
-                          })
-                        }
-                      >
-                        <SelectTrigger className="w-[140px]">
-                          <SelectValue placeholder="Ülke Kodu" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {countryCodes.map((country) => (
-                            <SelectItem
-                              key={country.code}
-                              value={country.code.toString()}
-                            >
-                              {country.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        id="mobileNumber"
-                        name="mobileNumber"
-                        type="tel"
-                        placeholder="5XX XXX XX XX"
-                        value={formData.mobileNumber}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
-                  </Button>
                 </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="email">E-posta</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="ornek@mail.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="password">Şifre</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>Telefon</Label>
+                  <PhoneInput
+                    country={'tr'}
+                    value={formData.mobileNumber}
+                    onChange={handlePhoneChange}
+                    inputClass="!w-full !h-10 !text-base"
+                    containerClass="!w-full"
+                    buttonClass="!h-10 !border !border-input"
+                    dropdownClass="!w-[300px]"
+                    enableSearch
+                    searchPlaceholder="Ülke Ara..."
+                    searchNotFound="Ülke Bulunamadı"
+                    preferredCountries={['tr', 'us', 'gb', 'de']}
+                    inputProps={{
+                      name: 'phone',
+                      required: true,
+                      autoFocus: false,
+                    }}
+                  />
+                </div>
+
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
+                </Button>
               </div>
             </form>
+
             <div className="text-balance text-center text-xs text-muted-foreground">
               Devam ederek <TermsDialog /> ve <PrivacyDialog />
               &apos;nı kabul etmiş olursunuz.
@@ -580,30 +605,33 @@ export default function SignUp() {
             <form onSubmit={handleSubmit}>
               <div className="grid gap-6">
                 <div className="grid gap-6">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Ad</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="Adınız"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="name">Ad</Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="Adınız"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="surname">Soyad</Label>
+                      <Input
+                        id="surname"
+                        name="surname"
+                        type="text"
+                        placeholder="Soyadınız"
+                        value={formData.surname}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="surname">Soyad</Label>
-                    <Input
-                      id="surname"
-                      name="surname"
-                      type="text"
-                      placeholder="Soyadınız"
-                      value={formData.surname}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
+
                   <div className="grid gap-2">
                     <Label htmlFor="email">E-posta</Label>
                     <Input
@@ -616,6 +644,7 @@ export default function SignUp() {
                       required
                     />
                   </div>
+
                   <div className="grid gap-2">
                     <Label htmlFor="password">Şifre</Label>
                     <Input
@@ -628,50 +657,34 @@ export default function SignUp() {
                       required
                     />
                   </div>
+
                   <div className="grid gap-2">
                     <Label>Telefon</Label>
-                    <div className="flex gap-2">
-                      <Select
-                        name="countryCode"
-                        value={formData.countryCode.toString()}
-                        onValueChange={(value) =>
-                          handleInputChange({
-                            target: {
-                              name: 'countryCode',
-                              value: parseInt(value),
-                            },
-                          })
-                        }
-                      >
-                        <SelectTrigger className="w-[140px]">
-                          <SelectValue placeholder="Ülke Kodu" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {countryCodes.map((country) => (
-                            <SelectItem
-                              key={country.code}
-                              value={country.code.toString()}
-                            >
-                              {country.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        id="mobileNumber"
-                        name="mobileNumber"
-                        type="tel"
-                        placeholder="5XX XXX XX XX"
-                        value={formData.mobileNumber}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
+                    <PhoneInput
+                      country={'tr'}
+                      value={formData.mobileNumber}
+                      onChange={handlePhoneChange}
+                      inputClass="!w-full !h-10 !text-base"
+                      containerClass="!w-full"
+                      buttonClass="!h-10 !border !border-input"
+                      dropdownClass="!w-[300px]"
+                      enableSearch
+                      searchPlaceholder="Ülke Ara..."
+                      searchNotFound="Ülke Bulunamadı"
+                      preferredCountries={['tr', 'us', 'gb', 'de']}
+                      inputProps={{
+                        name: 'phone',
+                        required: true,
+                        autoFocus: false,
+                      }}
+                    />
                   </div>
+
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
                   </Button>
                 </div>
+
                 <div className="text-center text-sm">
                   Zaten hesabınız var mı?{' '}
                   <a
