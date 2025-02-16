@@ -10,13 +10,14 @@ export const authRegex = {
   name: /^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/,
 
   /**
-   * Matches passwords with at least:
-   * - 1 uppercase letter
-   * - 1 lowercase letter
-   * - 1 number
-   * - 1 special character
+   * Password validation patterns
    */
-  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+  passwordPatterns: {
+    lowercase: /[a-z]/,
+    uppercase: /[A-Z]/,
+    number: /[0-9]/,
+    special: /[@$!%*?&#]/, // Added & and # as valid special characters
+  },
 } as const
 
 /**
@@ -36,8 +37,10 @@ export const authMessages = {
   password: {
     min: 'Şifre en az 8 karakter olmalıdır',
     max: 'Şifre en fazla 100 karakter olabilir',
-    format:
-      'Şifre en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir',
+    lowercase: 'En az bir küçük harf içermelidir',
+    uppercase: 'En az bir büyük harf içermelidir',
+    number: 'En az bir rakam içermelidir',
+    special: 'En az bir özel karakter (@$!%*?&#) içermelidir',
   },
   phone: {
     invalid: 'Geçerli bir telefon numarası giriniz',
@@ -69,7 +72,18 @@ export const passwordSchema = z
   .string()
   .min(8, authMessages.password.min)
   .max(100, authMessages.password.max)
-  .regex(authRegex.password, authMessages.password.format)
+  .refine((value) => authRegex.passwordPatterns.lowercase.test(value), {
+    message: authMessages.password.lowercase,
+  })
+  .refine((value) => authRegex.passwordPatterns.uppercase.test(value), {
+    message: authMessages.password.uppercase,
+  })
+  .refine((value) => authRegex.passwordPatterns.number.test(value), {
+    message: authMessages.password.number,
+  })
+  .refine((value) => authRegex.passwordPatterns.special.test(value), {
+    message: authMessages.password.special,
+  })
 
 /**
  * Zod schema for phone validation
