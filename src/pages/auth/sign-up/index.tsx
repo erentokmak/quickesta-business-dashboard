@@ -107,7 +107,7 @@ export default function SignUp() {
 
         const signInResult = await signIn('credentials', {
           redirect: false,
-          username: formData.email,
+          email: formData.email,
           password: formData.password,
         })
 
