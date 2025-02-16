@@ -9,16 +9,6 @@ export const login = async (data: ILoginRequest): Promise<IAuthResponse> => {
   return response.data
 }
 
-interface RegisterData {
-  name: string
-  surname: string
-  email: string
-  password: string
-  confirmPassword: string
-  mobileNumber: string
-  countryCode: number
-}
-
 export const register = async (data: IRegisterRequest): Promise<IAuthResponse> => {
   const response = await axiosInstance.post(
     `/authentication/identity/v1/user/registerUser`,
