@@ -1,4 +1,5 @@
 import axiosInstance from '../client'
+import { formatPhoneNumber } from '@/utils/formatters/phone'
 
 export const login = async (data: any) => {
   const response = await axiosInstance.post(
@@ -16,14 +17,9 @@ export const register = async (data: {
   mobileNumber: string
   countryCode: number
 }) => {
-  // Format the mobile number by removing the country code and any non-digit characters
-  const formattedNumber = data.mobileNumber
-    .replace(`+${data.countryCode}`, '') // Remove country code
-    .replace(/\D/g, '') // Remove any non-digit characters
-
   const registerData = {
     ...data,
-    mobileNumber: formattedNumber,
+    mobileNumber: formatPhoneNumber(data.mobileNumber, data.countryCode),
     confirmPassword: data.password,
   }
 
@@ -31,7 +27,7 @@ export const register = async (data: {
   console.log('Registering with data:', registerData)
 
   const response = await axiosInstance.post(
-    `/authentication/identity/v1/identity/registerUser`,
+    `/authentication/identity/v1/user/registerUser`,
     registerData,
   )
   return response.data

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { z } from 'zod'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
@@ -28,67 +27,77 @@ import {
 import { useIsMobile } from '@/hooks/Responsive'
 import { useToast } from '@/hooks/use-toast'
 import { register } from '@/lib/api-v1/auth'
+import { extractCountryCode } from '@/utils/formatters/phone'
 
-// Country codes data
-const countryCodes = [
-  { code: 90, label: 'Türkiye', flag: '🇹🇷', dialCode: '+90' },
-  { code: 1, label: 'USA', flag: '🇺🇸', dialCode: '+1' },
-  { code: 44, label: 'UK', flag: '🇬🇧', dialCode: '+44' },
-  { code: 49, label: 'Germany', flag: '🇩🇪', dialCode: '+49' },
-  { code: 33, label: 'France', flag: '🇫🇷', dialCode: '+33' },
-  { code: 39, label: 'Italy', flag: '🇮🇹', dialCode: '+39' },
-  { code: 34, label: 'Spain', flag: '🇪🇸', dialCode: '+34' },
-  { code: 31, label: 'Netherlands', flag: '🇳🇱', dialCode: '+31' },
-  { code: 46, label: 'Sweden', flag: '🇸🇪', dialCode: '+46' },
-  { code: 47, label: 'Norway', flag: '🇳🇴', dialCode: '+47' },
-]
+interface FormData {
+  name: string
+  surname: string
+  email: string
+  password: string
+  mobileNumber: string
+  countryCode: number
+}
 
-// Form validation schema
-const signUpSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Ad en az 2 karakter olmalıdır')
-    .max(50, 'Ad en fazla 50 karakter olabilir')
-    .regex(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, 'Ad sadece harflerden oluşmalıdır'),
-  surname: z
-    .string()
-    .min(2, 'Soyad en az 2 karakter olmalıdır')
-    .max(50, 'Soyad en fazla 50 karakter olabilir')
-    .regex(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, 'Soyad sadece harflerden oluşmalıdır'),
-  email: z
-    .string()
-    .email('Geçerli bir e-posta adresi giriniz')
-    .min(5, 'E-posta en az 5 karakter olmalıdır')
-    .max(100, 'E-posta en fazla 100 karakter olabilir'),
-  password: z
-    .string()
-    .min(8, 'Şifre en az 8 karakter olmalıdır')
-    .max(100, 'Şifre en fazla 100 karakter olabilir')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-      'Şifre en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir',
-    ),
-  phone: z.string().min(10, 'Geçerli bir telefon numarası giriniz'),
-})
-
-type SignUpFormValues = z.infer<typeof signUpSchema>
+interface FormErrors {
+  name?: string
+  surname?: string
+  email?: string
+  password?: string
+  phone?: string
+}
 
 export default function SignUp() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     surname: '',
     email: '',
     password: '',
     mobileNumber: '',
-    countryCode: 90, // Default to Turkey
+    countryCode: 90,
   })
+  const [errors, setErrors] = useState<FormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const isMobile = useIsMobile()
   const { toast } = useToast()
   const router = useRouter()
 
+  const validateForm = (data: FormData): FormErrors => {
+    const errors: FormErrors = {}
+
+    if (!data.name || data.name.length < 2) {
+      errors.name = 'Ad en az 2 karakter olmalıdır'
+    }
+    if (!data.surname || data.surname.length < 2) {
+      errors.surname = 'Soyad en az 2 karakter olmalıdır'
+    }
+    if (!data.email || !data.email.includes('@')) {
+      errors.email = 'Geçerli bir e-posta adresi giriniz'
+    }
+    if (!data.password || data.password.length < 8) {
+      errors.password = 'Şifre en az 8 karakter olmalıdır'
+    }
+    if (!data.mobileNumber || data.mobileNumber.length < 10) {
+      errors.phone = 'Geçerli bir telefon numarası giriniz'
+    }
+
+    return errors
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const validationErrors = validateForm(formData)
+    setErrors(validationErrors)
+
+    if (Object.keys(validationErrors).length > 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Form hatası',
+        description: 'Lütfen tüm alanları doğru şekilde doldurunuz.',
+      })
+      return
+    }
+
     setIsLoading(true)
 
     try {
@@ -116,11 +125,6 @@ export default function SignUp() {
           return
         }
 
-        toast({
-          title: 'Giriş başarılı!',
-          description: 'Ana sayfaya yönlendiriliyorsunuz...',
-        })
-
         router.push('/dashboard')
       } else {
         toast({
@@ -140,11 +144,7 @@ export default function SignUp() {
     }
   }
 
-  const handleInputChange = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | { target: { name: string; value: any } },
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
@@ -155,10 +155,119 @@ export default function SignUp() {
   const handlePhoneChange = (value: string, data: any) => {
     setFormData((prev) => ({
       ...prev,
-      countryCode: parseInt(data.dialCode),
-      mobileNumber: value, // Keep the full value including country code
+      countryCode: extractCountryCode(data.dialCode),
+      mobileNumber: value,
     }))
   }
+
+  const renderForm = () => (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor="name">Ad</Label>
+          <Input
+            id="name"
+            name="name"
+            type="text"
+            placeholder="Adınız"
+            value={formData.name}
+            onChange={handleInputChange}
+            required
+            className={cn(errors.name && 'border-red-500')}
+          />
+          {errors.name && (
+            <span className="text-xs text-red-500">{errors.name}</span>
+          )}
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="surname">Soyad</Label>
+          <Input
+            id="surname"
+            name="surname"
+            type="text"
+            placeholder="Soyadınız"
+            value={formData.surname}
+            onChange={handleInputChange}
+            required
+            className={cn(errors.surname && 'border-red-500')}
+          />
+          {errors.surname && (
+            <span className="text-xs text-red-500">{errors.surname}</span>
+          )}
+        </div>
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="email">E-posta</Label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="ornek@mail.com"
+          value={formData.email}
+          onChange={handleInputChange}
+          required
+          className={cn(errors.email && 'border-red-500')}
+        />
+        {errors.email && (
+          <span className="text-xs text-red-500">{errors.email}</span>
+        )}
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor="password">Şifre</Label>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="••••••••"
+          value={formData.password}
+          onChange={handleInputChange}
+          required
+          className={cn(errors.password && 'border-red-500')}
+        />
+        {errors.password && (
+          <span className="text-xs text-red-500">{errors.password}</span>
+        )}
+      </div>
+
+      <div className="grid gap-2">
+        <Label>Telefon</Label>
+        <PhoneInput
+          country={'tr'}
+          value={formData.mobileNumber}
+          onChange={handlePhoneChange}
+          inputClass="!w-full !h-10 !text-base"
+          containerClass="!w-full"
+          buttonClass="!h-10 !border !border-input"
+          dropdownClass="!w-[300px]"
+          enableSearch
+          searchPlaceholder="Ülke Ara..."
+          searchNotFound="Ülke Bulunamadı"
+          preferredCountries={['tr', 'us', 'gb', 'de']}
+          inputProps={{
+            name: 'phone',
+            required: true,
+            autoFocus: false,
+          }}
+        />
+        {errors.phone && (
+          <span className="text-xs text-red-500">{errors.phone}</span>
+        )}
+      </div>
+
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
+      </Button>
+
+      <div className="text-center text-sm">
+        Zaten hesabınız var mı?{' '}
+        <a href="/auth/sign-in" className="underline underline-offset-4">
+          Giriş Yap
+        </a>
+      </div>
+    </form>
+  )
 
   const TermsDialog = () => (
     <Dialog>
@@ -451,27 +560,19 @@ export default function SignUp() {
     </Dialog>
   )
 
-  // Mobile design
   if (isMobile) {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
         <div className="w-full max-w-sm">
-          <div className={cn('flex flex-col gap-6')}>
+          <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-2">
-              <a
-                href="#"
-                className="flex flex-col items-center gap-2 font-medium"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-md">
-                  <Image
-                    src="/assets/images/brand-images/quickestaiconblue.png"
-                    alt="Quickesta"
-                    width={32}
-                    height={32}
-                  />
-                </div>
-                <span className="sr-only">Quickesta</span>
-              </a>
+              <Image
+                src="/assets/images/brand-images/quickestaiconblue.png"
+                alt="Quickesta"
+                width={32}
+                height={32}
+                className="rounded-md"
+              />
               <h1 className="text-xl font-bold">
                 Quickesta&apos;ya Kayıt Olun
               </h1>
@@ -486,88 +587,7 @@ export default function SignUp() {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Ad</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="Adınız"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="surname">Soyad</Label>
-                    <Input
-                      id="surname"
-                      name="surname"
-                      type="text"
-                      placeholder="Soyadınız"
-                      value={formData.surname}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="email">E-posta</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="ornek@mail.com"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="password">Şifre</Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label>Telefon</Label>
-                  <PhoneInput
-                    country={'tr'}
-                    value={formData.mobileNumber}
-                    onChange={handlePhoneChange}
-                    inputClass="!w-full !h-10 !text-base"
-                    containerClass="!w-full"
-                    buttonClass="!h-10 !border !border-input"
-                    dropdownClass="!w-[300px]"
-                    enableSearch
-                    searchPlaceholder="Ülke Ara..."
-                    searchNotFound="Ülke Bulunamadı"
-                    preferredCountries={['tr', 'us', 'gb', 'de']}
-                    inputProps={{
-                      name: 'phone',
-                      required: true,
-                      autoFocus: false,
-                    }}
-                  />
-                </div>
-
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
-                </Button>
-              </div>
-            </form>
+            {renderForm()}
 
             <div className="text-balance text-center text-xs text-muted-foreground">
               Devam ederek <TermsDialog /> ve <PrivacyDialog />
@@ -579,21 +599,19 @@ export default function SignUp() {
     )
   }
 
-  // Desktop design
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <a href="#" className="flex items-center gap-2 self-center font-medium">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Image
-              src="/assets/images/brand-images/quickestaiconwhite.png"
-              alt="Quickesta"
-              width={32}
-              height={32}
-            />
-          </div>
-          Quickesta
-        </a>
+        <div className="flex items-center gap-2 self-center font-medium">
+          <Image
+            src="/assets/images/brand-images/quickestaiconwhite.png"
+            alt="Quickesta"
+            width={24}
+            height={24}
+            className="rounded-md bg-primary p-1"
+          />
+          <span>Quickesta</span>
+        </div>
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-xl">Hesap Oluşturun</CardTitle>
@@ -601,102 +619,7 @@ export default function SignUp() {
               Bilgilerinizi girerek hemen başlayın
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-6">
-                <div className="grid gap-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="name">Ad</Label>
-                      <Input
-                        id="name"
-                        name="name"
-                        type="text"
-                        placeholder="Adınız"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="surname">Soyad</Label>
-                      <Input
-                        id="surname"
-                        name="surname"
-                        type="text"
-                        placeholder="Soyadınız"
-                        value={formData.surname}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">E-posta</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="ornek@mail.com"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label htmlFor="password">Şifre</Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid gap-2">
-                    <Label>Telefon</Label>
-                    <PhoneInput
-                      country={'tr'}
-                      value={formData.mobileNumber}
-                      onChange={handlePhoneChange}
-                      inputClass="!w-full !h-10 !text-base"
-                      containerClass="!w-full"
-                      buttonClass="!h-10 !border !border-input"
-                      dropdownClass="!w-[300px]"
-                      enableSearch
-                      searchPlaceholder="Ülke Ara..."
-                      searchNotFound="Ülke Bulunamadı"
-                      preferredCountries={['tr', 'us', 'gb', 'de']}
-                      inputProps={{
-                        name: 'phone',
-                        required: true,
-                        autoFocus: false,
-                      }}
-                    />
-                  </div>
-
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
-                  </Button>
-                </div>
-
-                <div className="text-center text-sm">
-                  Zaten hesabınız var mı?{' '}
-                  <a
-                    href="/auth/sign-in"
-                    className="underline underline-offset-4"
-                  >
-                    Giriş Yap
-                  </a>
-                </div>
-              </div>
-            </form>
-          </CardContent>
+          <CardContent>{renderForm()}</CardContent>
         </Card>
         <div className="text-balance text-center text-xs text-muted-foreground">
           Devam ederek <TermsDialog /> ve <PrivacyDialog />
