@@ -17,6 +17,7 @@ import {
   Home,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
 
 import { NavMain } from '@/components/dashboard/nav-main'
 import { NavUser } from '@/components/dashboard/nav-user'
@@ -30,7 +31,7 @@ import {
 } from '@/ui/sidebar'
 
 // This is the actual data for Quickesta Accounts Dashboard
-const getDefaultData = (sessionUser: any) => ({
+const getDefaultData = (sessionUser: any, currentPath: string) => ({
   user: {
     name: `${sessionUser?.name || ''} ${sessionUser?.surname || ''}`.trim(),
     email: sessionUser?.email || '',
@@ -48,7 +49,7 @@ const getDefaultData = (sessionUser: any) => ({
       title: 'Genel Bakış',
       url: '/dashboard',
       icon: BarChart3,
-      isActive: true,
+      isActive: currentPath === '/dashboard',
       items: [
         {
           title: 'Anasayfa',
@@ -64,6 +65,7 @@ const getDefaultData = (sessionUser: any) => ({
       title: 'Güvenlik',
       url: '/settings/security',
       icon: Shield,
+      isActive: currentPath.startsWith('/settings'),
       items: [
         {
           title: 'Güvenlik Ayarları',
@@ -80,9 +82,10 @@ const getDefaultData = (sessionUser: any) => ({
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
+  const pathname = usePathname()
   const data = React.useMemo(
-    () => getDefaultData(session?.user),
-    [session?.user],
+    () => getDefaultData(session?.user, pathname || ''),
+    [session?.user, pathname],
   )
 
   return (

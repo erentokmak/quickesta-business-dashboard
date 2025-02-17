@@ -18,20 +18,21 @@ import {
   SidebarMenuSubItem,
 } from '@/ui/sidebar'
 import Link from 'next/link'
-export function NavMain({
-  items,
-}: {
+
+interface NavMainProps {
   items: {
     title: string
     url: string
-    icon?: LucideIcon
+    icon: LucideIcon
     isActive?: boolean
     items?: {
       title: string
       url: string
     }[]
   }[]
-}) {
+}
+
+export function NavMain({ items }: NavMainProps) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
