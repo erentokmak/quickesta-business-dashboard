@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useDispatch, useSelector } from 'react-redux'
+import { addAccount, setActiveAccount } from '@/store/accountsSlice'
 import Image from 'next/image'
 import Link from 'next/link'
 import PhoneInput from 'react-phone-input-2'
@@ -39,6 +41,7 @@ export default function SignUp() {
   const isMobile = useIsMobile()
   const { toast } = useToast()
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -106,26 +109,57 @@ export default function SignUp() {
         })
 
         const signInResult = await signIn('credentials', {
-        redirect: false,
+          redirect: false,
           email: formData.email,
           password: formData.password,
-      })
+        })
 
         if (signInResult?.error) {
           const errorData = JSON.parse(signInResult.error)
-        toast({
-          variant: 'destructive',
-          title: errorData.message,
-          description: errorData.detail,
-        })
-        return
-      }
+          toast({
+            variant: 'destructive',
+            title: errorData.message,
+            description: errorData.detail,
+          })
+          return
+        }
+
+        // Get the session data
+        const session = await getSession()
+        if (!session?.user) {
+          toast({
+            title: 'Hata',
+            description: 'Kullanıcı bilgileri alınamadı',
+            variant: 'destructive',
+          })
+          return
+        }
+
+        // Add account to Redux store
+        const accountData = {
+          id: session.user.id,
+          email: formData.email,
+          name: session.user.name,
+          surname: session.user.surname,
+          phoneNumber: session.user.phoneNumber,
+          username: formData.email,
+          accessToken: session.user.accessToken,
+          refreshToken: session.user.refreshToken,
+          expiresIn: Date.now() + 3600000,
+          roles: session.user.roles,
+          permissions: session.user.permissions,
+        }
+
+        dispatch(addAccount(accountData))
+        dispatch(setActiveAccount(accountData.id))
+
+        router.push('/dashboard')
       } else {
-      toast({
+        toast({
           variant: 'destructive',
           title: 'Kayıt başarısız',
           description: response.error || 'Bir hata oluştu.',
-      })
+        })
       }
     } catch (error: any) {
       toast({
@@ -258,19 +292,19 @@ export default function SignUp() {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
         <div className="w-full max-w-sm">
-              <div className="flex flex-col gap-6">
-                <div className="flex flex-col items-center gap-2">
-                      <Image
-                        src="/assets/images/brand-images/quickestaiconblue.png"
-                        alt="Quickesta"
-                        width={32}
-                        height={32}
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col items-center gap-2">
+              <Image
+                src="/assets/images/brand-images/quickestaiconblue.png"
+                alt="Quickesta"
+                width={32}
+                height={32}
                 className="rounded-md"
-                      />
-                  <h1 className="text-xl font-bold">
+              />
+              <h1 className="text-xl font-bold">
                 Quickesta&apos;ya Kayıt Olun
-                  </h1>
-                  <div className="text-center text-sm">
+              </h1>
+              <div className="text-center text-sm">
                 Zaten hesabınız var mı?{' '}
                 <Link
                   href="/auth/sign-in"
@@ -294,15 +328,15 @@ export default function SignUp() {
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <div className="flex items-center gap-2 self-center font-medium">
-            <Image
-              src="/assets/images/brand-images/quickestaiconwhite.png"
-              alt="Quickesta"
+          <Image
+            src="/assets/images/brand-images/quickestaiconwhite.png"
+            alt="Quickesta"
             width={24}
             height={24}
             className="rounded-md bg-primary p-1"
-            />
+          />
           <span>Quickesta</span>
-          </div>
+        </div>
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-xl">Hesap Oluşturun</CardTitle>
