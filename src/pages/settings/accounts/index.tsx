@@ -1,4 +1,4 @@
-import { useSession, signOut, signIn } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import {
@@ -24,7 +24,7 @@ import { useToast } from '@/hooks/use-toast'
 import { logout } from '@/lib/api-v1/auth'
 
 export default function AccountsSettingsPage() {
-  const { data: session } = useSession()
+  const { data: session, update } = useSession()
   const { toast } = useToast()
   const router = useRouter()
   const dispatch = useDispatch()
@@ -37,21 +37,21 @@ export default function AccountsSettingsPage() {
       const targetAccount = accounts.find((acc) => acc.id === accountId)
       if (!targetAccount) return
 
-      // Re-login with the selected account
-      const result = await signIn('credentials', {
+      // Update NextAuth.js session
+      await update({
+        ...targetAccount,
+        id: targetAccount.id,
         email: targetAccount.email,
-        password: '', // You might need to handle this differently
-        redirect: false,
+        name: targetAccount.name,
+        surname: targetAccount.surname,
+        phoneNumber: targetAccount.phoneNumber,
+        username: targetAccount.username,
+        accessToken: targetAccount.accessToken,
+        refreshToken: targetAccount.refreshToken,
+        expiresIn: targetAccount.expiresIn,
+        roles: targetAccount.roles,
+        permissions: targetAccount.permissions,
       })
-
-      if (result?.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Hesap değiştirme başarısız',
-          description: 'Lütfen tekrar giriş yapın.',
-        })
-        return
-      }
 
       dispatch(setActiveAccount(accountId))
 

@@ -35,7 +35,6 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
-  DropdownMenuShortcut,
 } from '@/ui/dropdown-menu'
 import {
   SidebarMenu,
@@ -50,7 +49,7 @@ import Link from 'next/link'
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { toast } = useToast()
-  const { data: session } = useSession()
+  const { data: session, update } = useSession()
   const { setTheme } = useTheme()
   const router = useRouter()
   const dispatch = useDispatch()
@@ -111,19 +110,21 @@ export function NavUser() {
       // First update Redux store
       dispatch(setActiveAccount(accountId))
 
-      // Update the session by re-authenticating with the API
-      // This will use the access token to get fresh session data
-      const response = await fetch('/api/auth/refresh-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${targetAccount.accessToken}`,
-        },
+      // Update NextAuth.js session
+      await update({
+        ...targetAccount,
+        id: targetAccount.id,
+        email: targetAccount.email,
+        name: targetAccount.name,
+        surname: targetAccount.surname,
+        phoneNumber: targetAccount.phoneNumber,
+        username: targetAccount.username,
+        accessToken: targetAccount.accessToken,
+        refreshToken: targetAccount.refreshToken,
+        expiresIn: targetAccount.expiresIn,
+        roles: targetAccount.roles,
+        permissions: targetAccount.permissions,
       })
-
-      if (!response.ok) {
-        throw new Error('Session refresh failed')
-      }
 
       toast({
         title: 'Hesap değiştirildi',
