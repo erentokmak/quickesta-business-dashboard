@@ -26,6 +26,7 @@ import {
 import { Switch } from '@/ui/switch'
 import { useToast } from '@/hooks/use-toast'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { SidebarInset, SidebarProvider } from '@/ui/sidebar'
 
 const passwordFormSchema = z
@@ -78,6 +79,10 @@ export default function SecuritySettingsPage() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
+        <PageHeader
+          title="Güvenlik"
+          items={[{ title: 'Ayarlar', href: '/settings' }]}
+        />
         <div className="flex flex-1 flex-col gap-6 p-6">
           <Card>
             <CardHeader>

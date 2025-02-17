@@ -27,6 +27,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/avatar'
 import { useToast } from '@/hooks/use-toast'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { SidebarInset, SidebarProvider } from '@/ui/sidebar'
 
 const profileFormSchema = z.object({
@@ -92,6 +93,10 @@ export default function ProfileSettingsPage() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
+        <PageHeader
+          title="Profil"
+          items={[{ title: 'Ayarlar', href: '/settings' }]}
+        />
         <div className="flex flex-1 flex-col gap-6 p-6">
           <Card>
             <CardHeader>
@@ -237,4 +242,4 @@ export default function ProfileSettingsPage() {
       </SidebarInset>
     </SidebarProvider>
   )
-} 
+}

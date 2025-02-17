@@ -13,6 +13,7 @@ import {
 } from '@/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { SidebarInset, SidebarProvider } from '@/ui/sidebar'
 
 // Örnek cihaz verileri
@@ -79,6 +80,12 @@ export default function DevicesSettingsPage() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
+        <PageHeader 
+          title="Cihaz Yönetimi" 
+          items={[
+            { title: "Ayarlar", href: "/settings" }
+          ]} 
+        />
         <div className="flex flex-1 flex-col gap-6 p-6">
           <Card>
             <CardHeader>
