@@ -26,6 +26,7 @@ import {
   Bell,
   Settings,
   ArrowRight,
+  Users,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -52,6 +53,12 @@ export default function Page() {
       icon: Smartphone,
       href: '/settings/devices',
     },
+    {
+      title: 'Hesaplarım',
+      description: 'Hesaplarınızı yönetin',
+      icon: Users,
+      href: '/settings/accounts',
+    },
   ]
 
   return (
@@ -69,7 +76,7 @@ export default function Page() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {settingsCards.map((card) => (
                   <Link key={card.href} href={card.href}>
                     <Card className="h-full cursor-pointer transition-colors hover:bg-muted/50">

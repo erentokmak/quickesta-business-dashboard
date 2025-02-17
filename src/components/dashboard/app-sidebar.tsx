@@ -75,6 +75,10 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
           title: 'Cihaz Yönetimi',
           url: '/settings/devices',
         },
+        {
+          title: 'Hesaplarım',
+          url: '/settings/accounts',
+        },
       ],
     },
   ],

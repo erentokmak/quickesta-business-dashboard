@@ -188,13 +188,26 @@ export default function SignIn() {
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading
-          ? 'Giriş yapılıyor...'
-          : isAddMode
-            ? 'Hesap Ekle'
-            : 'Giriş Yap'}
-      </Button>
+      <div className="flex flex-col gap-2">
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading
+            ? 'Giriş yapılıyor...'
+            : isAddMode
+              ? 'Hesap Ekle'
+              : 'Giriş Yap'}
+        </Button>
+
+        {isAddMode && (
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => router.push('/dashboard')}
+          >
+            Vazgeç
+          </Button>
+        )}
+      </div>
 
       {!isMobile && !isAddMode && (
         <div className="text-center text-sm">
