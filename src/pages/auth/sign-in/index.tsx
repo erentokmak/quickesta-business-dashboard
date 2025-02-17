@@ -1,6 +1,12 @@
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { getSession, signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  addAccount,
+  selectAccounts,
+  setActiveAccount,
+} from '@/store/accountsSlice'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -24,6 +30,7 @@ export default function SignIn() {
   const router = useRouter()
   const { toast } = useToast()
   const isMobile = useIsMobile()
+  const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -33,6 +40,12 @@ export default function SignIn() {
     email: '',
     password: '',
   })
+  const accounts = useSelector(selectAccounts)
+  const { data: session } = useSession()
+
+  const isAddMode =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('mode') === 'add'
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -77,6 +90,54 @@ export default function SignIn() {
           variant: 'destructive',
         })
         return
+      }
+
+      // Check if account already exists
+      const existingAccount = accounts.find(
+        (acc) => acc.email === formData.email,
+      )
+      if (existingAccount) {
+        toast({
+          title: 'Hesap Zaten Mevcut',
+          description: 'Bu e-posta adresi ile bir hesap zaten eklenmiş.',
+          variant: 'destructive',
+        })
+        return
+      }
+
+      // Get the latest session data
+      const session = await getSession()
+      if (!session?.user) {
+        toast({
+          title: 'Hata',
+          description: 'Kullanıcı bilgileri alınamadı',
+          variant: 'destructive',
+        })
+        return
+      }
+
+      // Add account to Redux store
+      const accountData = {
+        id: session.user.id,
+        email: formData.email,
+        name: session.user.name,
+        surname: session.user.surname,
+        phoneNumber: session.user.phoneNumber,
+        username: formData.email,
+        accessToken: session.user.accessToken,
+        refreshToken: session.user.refreshToken,
+        expiresIn: Date.now() + 3600000,
+        roles: session.user.roles,
+        permissions: session.user.permissions,
+      }
+
+      dispatch(addAccount(accountData))
+      dispatch(setActiveAccount(accountData.id))
+
+      if (isAddMode) {
+        router.push('/dashboard')
+      } else {
+        router.push('/dashboard')
       }
     } catch (error) {
       toast({
@@ -128,10 +189,14 @@ export default function SignIn() {
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+        {isLoading
+          ? 'Giriş yapılıyor...'
+          : isAddMode
+            ? 'Hesap Ekle'
+            : 'Giriş Yap'}
       </Button>
 
-      {!isMobile && (
+      {!isMobile && !isAddMode && (
         <div className="text-center text-sm">
           Hesabınız yok mu?{' '}
           <Link href="/auth/sign-up" className="underline underline-offset-4">
@@ -156,17 +221,19 @@ export default function SignIn() {
                 className="rounded-md"
               />
               <h1 className="text-xl font-bold">
-                Quickesta&apos;ya Giriş Yapın
+                {isAddMode ? 'Hesap Ekle' : "Quickesta'ya Giriş Yapın"}
               </h1>
-              <div className="text-center text-sm">
-                Hesabınız yok mu?{' '}
-                <Link
-                  href="/auth/sign-up"
-                  className="underline underline-offset-4"
-                >
-                  Kayıt Ol
-                </Link>
-              </div>
+              {!isAddMode && (
+                <div className="text-center text-sm">
+                  Hesabınız yok mu?{' '}
+                  <Link
+                    href="/auth/sign-up"
+                    className="underline underline-offset-4"
+                  >
+                    Kayıt Ol
+                  </Link>
+                </div>
+              )}
             </div>
 
             {renderForm()}
@@ -193,8 +260,14 @@ export default function SignIn() {
         </div>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Giriş Yapın</CardTitle>
-            <CardDescription>Bilgilerinizi girerek giriş yapın</CardDescription>
+            <CardTitle className="text-xl">
+              {isAddMode ? 'Hesap Ekle' : 'Giriş Yapın'}
+            </CardTitle>
+            <CardDescription>
+              {isAddMode
+                ? 'Yeni bir hesap eklemek için giriş yapın'
+                : 'Bilgilerinizi girerek giriş yapın'}
+            </CardDescription>
           </CardHeader>
           <CardContent>{renderForm()}</CardContent>
         </Card>

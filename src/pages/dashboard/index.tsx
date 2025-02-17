@@ -31,6 +31,7 @@ import Link from 'next/link'
 
 export default function Page() {
   const { data: session } = useSession()
+  console.log('session', session)
 
   const settingsCards = [
     {
