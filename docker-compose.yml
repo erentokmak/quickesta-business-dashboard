@@ -26,6 +26,8 @@ services:
       - '3002'
     env_file:
       - .env
+    volumes:
+      - ./.env:/app/.env:ro
     networks:
       - quickesta-network
     restart: always

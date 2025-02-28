@@ -20,7 +20,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 
-# Build the application - doğrudan next build kullanıyoruz, env-cmd kullanmıyoruz
+# Build the application - doğrudan next build kullanıyoruz
 RUN yarn next build
 
 # Production image, copy all the files and run next
@@ -38,7 +38,6 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/.env ./.env
 
 # Set correct permissions
 RUN chown -R nextjs:nodejs /app

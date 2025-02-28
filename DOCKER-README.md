@@ -31,6 +31,8 @@ NEXT_PUBLIC_ABANT_API_PROXY=https://api.accounts.quickesta.com
 NEXTAUTH_SECRET=your_nextauth_secret
 ```
 
+The `.env` file is mounted as a volume to the Next.js container, so any changes to the file will be reflected in the container without rebuilding the image.
+
 ## SSL Certificates
 
 Make sure you have the following SSL certificate files in the `nginx/` directory:
