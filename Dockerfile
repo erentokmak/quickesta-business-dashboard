@@ -20,8 +20,8 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 
-# Build the application
-RUN yarn build-prod
+# Build the application - doğrudan next build kullanıyoruz, env-cmd kullanmıyoruz
+RUN yarn next build
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -49,5 +49,5 @@ USER nextjs
 # Expose the port
 EXPOSE 3002
 
-# Start the application
-CMD ["yarn", "start-prod"] 
+# Start the application - doğrudan next start kullanıyoruz
+CMD ["yarn", "next", "start", "-p", "3002"] 

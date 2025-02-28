@@ -6,29 +6,30 @@ This repository contains Docker configuration for running the Quickesta Accounts
 
 - Docker and Docker Compose installed on your system
 - SSL certificates for your domains
+- .env file with required environment variables
 
 ## Project Structure
 
-- `nextjs/` - Contains the Dockerfile for the Next.js application
+- `Dockerfile` - Contains the Dockerfile for the Next.js application
 - `nginx/` - Contains the Nginx configuration and Dockerfile
 - `docker-compose.yml` - Docker Compose configuration file
 - `.env` - Environment variables for the Docker setup
 
 ## Environment Variables
 
-Copy the example environment file and update it with your values:
+Make sure you have a `.env` file in the root directory with the following variables:
 
-```bash
-cp .env.example .env
 ```
-
-Edit the `.env` file and fill in the required values:
-
-- `NEXT_PUBLIC_HASURA_GRAPHQL_URL` - URL for the Hasura GraphQL API
-- `NEXT_PUBLIC_HASURA_ADMIN_SECRET` - Admin secret for the Hasura GraphQL API
-- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` - Google Maps API key
-- `NEXT_PUBLIC_ABANT_API_PROXY` - URL for the Abant API proxy
-- `NEXTAUTH_SECRET` - Secret for NextAuth.js
+NODE_ENV=production
+PORT=3002
+NEXT_PUBLIC_APP_ENV=production
+NEXT_PUBLIC_SITE_URL=https://accounts.quickesta.com
+NEXT_PUBLIC_HASURA_GRAPHQL_URL=https://hasura.abantsu.com.tr/v1/graphql
+NEXT_PUBLIC_HASURA_ADMIN_SECRET=your_hasura_admin_secret
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+NEXT_PUBLIC_ABANT_API_PROXY=https://api.accounts.quickesta.com
+NEXTAUTH_SECRET=your_nextauth_secret
+```
 
 ## SSL Certificates
 
@@ -48,13 +49,13 @@ docker-compose up -d
 This will start the following services:
 
 - `nginx` - Nginx web server (ports 80 and 443)
-- `nextjs-app` - Next.js application (dashboard.visa.quickesta.com)
+- `nextjs-app` - Next.js application (accounts.quickesta.com)
 
 ## Accessing the Application
 
 Once the application is running, you can access it at:
 
-- Dashboard: https://dashboard.visa.quickesta.com
+- Dashboard: https://accounts.quickesta.com
 
 ## Stopping the Application
 
@@ -100,4 +101,4 @@ If you need to modify the Next.js application, make your changes and rebuild the
 ```bash
 docker-compose build nextjs-app
 docker-compose up -d
-``` 
+```

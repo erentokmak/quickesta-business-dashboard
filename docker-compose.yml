@@ -24,16 +24,8 @@ services:
       dockerfile: Dockerfile
     expose:
       - '3002'
-    environment:
-      - NODE_ENV=production
-      - PORT=3002
-      - NEXT_PUBLIC_APP_ENV=production
-      - NEXT_PUBLIC_SITE_URL=https://dashboard.visa.quickesta.com
-      - NEXT_PUBLIC_HASURA_GRAPHQL_URL=${NEXT_PUBLIC_HASURA_GRAPHQL_URL}
-      - NEXT_PUBLIC_HASURA_ADMIN_SECRET=${NEXT_PUBLIC_HASURA_ADMIN_SECRET}
-      - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-      - NEXT_PUBLIC_ABANT_API_PROXY=${NEXT_PUBLIC_ABANT_API_PROXY}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+    env_file:
+      - .env
     networks:
       - quickesta-network
     restart: always
