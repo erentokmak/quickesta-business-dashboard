@@ -1,43 +1,53 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+FROM node:18-alpine AS base
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+# Install dependencies only when needed
+FROM base AS deps
 WORKDIR /app
-EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-ARG GITHUB_USERNAME
-ARG GITHUB_TOKEN
-WORKDIR /src
+# Copy package.json and yarn.lock
+COPY package.json yarn.lock* ./
 
-# Copy nuget.config and replace placeholders
-COPY ["nuget.config", "."]
-RUN sed -i "s|%GITHUB_USERNAME%|${GITHUB_USERNAME}|g" nuget.config \
-    && sed -i "s|%GITHUB_TOKEN%|${GITHUB_TOKEN}|g" nuget.config
+# Install dependencies
+RUN yarn install --frozen-lockfile
 
-COPY ["MS.Services.Identity.Api/MS.Services.Identity.Api.csproj", "MS.Services.Identity.Api/"]
-COPY ["MS.Services.Identity.Domain/MS.Services.Identity.Domain.csproj", "MS.Services.Identity.Domain/"]
-COPY ["MS.Services.Identity.Application/MS.Services.Identity.Application.csproj", "MS.Services.Identity.Application/"]
-COPY ["MS.Services.Identity.Infrastructure/MS.Services.Identity.Infrastructure.csproj", "MS.Services.Identity.Infrastructure/"]
-
-# Restore packages
-RUN dotnet restore "MS.Services.Identity.Api/MS.Services.Identity.Api.csproj"
-
-# Copy everything else
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-WORKDIR "/src/MS.Services.Identity.Api"
 
-# Build
-RUN dotnet build "MS.Services.Identity.Api.csproj" -c Release -o /app/build
+# Set environment variables
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV production
 
-FROM build AS publish
-RUN dotnet publish "MS.Services.Identity.Api.csproj" -c Release -o /app/publish
+# Build the application
+RUN yarn build-prod
 
-FROM base AS final
+# Production image, copy all the files and run next
+FROM base AS runner
 WORKDIR /app
-COPY --from=publish /app/publish .
 
-# Debug için gerekli araçları ekleyelim
-RUN apt-get update
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
 
-# Health check için script ekleyelim
-ENTRYPOINT ["dotnet", "MS.Services.Identity.Api.dll"]
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy necessary files
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/.env ./.env
+
+# Set correct permissions
+RUN chown -R nextjs:nodejs /app
+
+# Switch to non-root user
+USER nextjs
+
+# Expose the port
+EXPOSE 3002
+
+# Start the application
+CMD ["yarn", "start-prod"] 

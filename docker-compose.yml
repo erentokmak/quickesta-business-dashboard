@@ -21,7 +21,7 @@ services:
   nextjs-app:
     build:
       context: .
-      dockerfile: nextjs/Dockerfile
+      dockerfile: Dockerfile
     expose:
       - '3002'
     environment:
