@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - identity-service
+    networks:
+      - identity-network
+    restart: always
+
+  quickesta-redis:
+    image: redis:latest
+    expose:
+      - "6379"
+    networks:
+      - identity-network
+    restart: always
+
+  identity-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - GITHUB_USERNAME=${GITHUB_USERNAME}
+        - GITHUB_TOKEN=${GITHUB_TOKEN}
+    expose:
+      - "80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+      - GITHUB_USERNAME=${GITHUB_USERNAME}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - RedisCacheOptions__ConnectionString=quickesta-redis:6379
+      - RedisCacheOptions__DefaultCacheTime=6000
+    depends_on:
+      - quickesta-redis
+    networks:
+      - identity-network
+    restart: always
+
+networks:
+  identity-network:
+    name: identity-network
+    driver: bridge
