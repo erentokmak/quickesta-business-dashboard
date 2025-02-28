@@ -10,6 +10,15 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   distDir: process.env.BUILD_DIR || '.next',
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/dashboard',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig
