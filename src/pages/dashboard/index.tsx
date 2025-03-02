@@ -1,5 +1,6 @@
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { ApplicationsSection } from '@/components/dashboard/applications-section'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -98,6 +99,9 @@ export default function Page() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Uygulamalar Bölümü */}
+          <ApplicationsSection />
 
           <div className="grid gap-6 md:grid-cols-2">
             <Card>

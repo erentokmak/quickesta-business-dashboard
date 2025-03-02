@@ -3,11 +3,15 @@ import { login } from '@/lib/api-v1/auth'
 import { NextApiRequest, NextApiResponse } from 'next'
 import type { AuthOptions } from 'next-auth'
 import NextAuth from 'next-auth'
+import jwt from 'jsonwebtoken'
 
 type NextAuthOptionsCallback = (
   req: NextApiRequest,
   res: NextApiResponse,
 ) => AuthOptions
+
+// JWT doğrulama için kullanılacak secret key
+const JWT_SECRET = process.env.NEXTAUTH_SECRET || 'your-secret-key'
 
 const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
   return {
@@ -18,8 +22,40 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
           email: { label: 'E-posta', type: 'text' },
           password: { label: 'Şifre', type: 'password' },
           remember: { label: 'Beni hatırla', type: 'checkbox' },
+          ssoToken: { label: 'SSO Token', type: 'text' },
         },
         authorize: async (credentials) => {
+          // SSO token ile giriş
+          if (credentials?.ssoToken) {
+            try {
+              // Token'ı doğrula
+              const decoded = jwt.verify(credentials.ssoToken, JWT_SECRET) as any
+
+              // Token geçerliyse kullanıcı bilgilerini döndür
+              if (decoded && decoded.email) {
+                return {
+                  id: decoded.id || decoded.sub,
+                  email: decoded.email,
+                  name: decoded.name,
+                  surname: decoded.surname,
+                  phoneNumber: decoded.phoneNumber,
+                  username: decoded.username,
+                  accessToken: decoded.accessToken,
+                  refreshToken: decoded.refreshToken,
+                  expiresIn: decoded.expiresIn,
+                  roles: decoded.roles,
+                  permissions: decoded.permissions,
+                }
+              }
+              
+              throw new Error('Geçersiz SSO token')
+            } catch (error) {
+              console.error('SSO Token Error:', error)
+              throw new Error('SSO token doğrulanamadı')
+            }
+          }
+
+          // Normal kimlik bilgileri ile giriş
           const data = JSON.stringify({
             userNameOrEmail: credentials?.email || '',
             password: credentials?.password || '',
