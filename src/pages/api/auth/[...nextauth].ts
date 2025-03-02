@@ -135,7 +135,12 @@ const nextAuthOptions: NextAuthOptionsCallback = (req, res) => {
       },
       redirect({ url }) {
         const siteUrl =
-          process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+          process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3003'
+
+        // SSO ile giriş yapıldığında dashboard'a yönlendir
+        if (url.includes('sso=true')) {
+          return `${siteUrl}/dashboard`
+        }
 
         if (url.startsWith('/auth/sign-in')) {
           return `${siteUrl}/auth/sign-in`

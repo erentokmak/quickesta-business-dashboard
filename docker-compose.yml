@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: Dockerfile
     expose:
-      - '3002'
+      - '3003'
     env_file:
       - .env
     volumes:

@@ -17,6 +17,30 @@ import { ExternalLink, AppWindow, Check, Clock, Code } from 'lucide-react'
 import Image from 'next/image'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
 import { Separator } from '@/ui/separator'
+import { Input } from '@/ui/input'
+import {
+  FileCheck,
+  Search,
+  Filter,
+  Plus,
+  CheckCircle,
+  XCircle,
+  Calendar,
+  Download,
+  MoreHorizontal,
+  Eye,
+  Edit,
+  Trash,
+} from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/ui/dropdown-menu'
+import Link from 'next/link'
 
 interface Application {
   id: string
@@ -257,97 +281,381 @@ export default function ApplicationsPage() {
     )
   }
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Onaylandı':
+        return 'text-green-500'
+      case 'Reddedildi':
+        return 'text-red-500'
+      default:
+        return 'text-yellow-500'
+    }
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'Onaylandı':
+        return <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+      case 'Reddedildi':
+        return <XCircle className="mr-2 h-4 w-4 text-red-500" />
+      default:
+        return <Clock className="mr-2 h-4 w-4 text-yellow-500" />
+    }
+  }
+
+  const getPaymentStatusColor = (status: string) => {
+    switch (status) {
+      case 'Ödendi':
+        return 'text-green-500'
+      default:
+        return 'text-yellow-500'
+    }
+  }
+
+  const getDocumentsStatusColor = (status: string) => {
+    switch (status) {
+      case 'Tamamlandı':
+        return 'text-green-500'
+      default:
+        return 'text-red-500'
+    }
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <PageHeader title="Uygulamalar" />
+        <PageHeader title="Başvurular" />
         <div className="flex flex-1 flex-col gap-6 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <FileCheck className="h-5 w-5" />
+              <h2 className="text-2xl font-bold tracking-tight">
+                Vize Başvuruları
+              </h2>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm">
+                <Filter className="mr-2 h-4 w-4" />
+                Filtrele
+              </Button>
+              <Button variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Dışa Aktar
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/applications/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Yeni Başvuru
+                </Link>
+              </Button>
+            </div>
+          </div>
+
           <Card>
             <CardHeader>
-              <CardTitle>Quickesta Uygulamaları</CardTitle>
-              <CardDescription>
-                Quickesta ekosistemindeki tüm uygulamalara buradan
-                erişebilirsiniz
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Tüm Başvurular</CardTitle>
+                  <CardDescription>
+                    Tüm vize başvurularını görüntüleyin ve yönetin
+                  </CardDescription>
+                </div>
+                <div className="flex w-full max-w-sm items-center space-x-2">
+                  <Input
+                    type="search"
+                    placeholder="Başvuru ara..."
+                    className="h-9"
+                  />
+                  <Button type="submit" size="sm" variant="ghost">
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="all" className="w-full">
-                <TabsList className="mb-6">
+              <Tabs defaultValue="all">
+                <TabsList className="mb-4">
                   <TabsTrigger value="all">Tümü</TabsTrigger>
-                  <TabsTrigger value="business">İş</TabsTrigger>
-                  <TabsTrigger value="productivity">Verimlilik</TabsTrigger>
-                  <TabsTrigger value="development">Geliştirme</TabsTrigger>
+                  <TabsTrigger value="pending">Beklemede</TabsTrigger>
+                  <TabsTrigger value="approved">Onaylanan</TabsTrigger>
+                  <TabsTrigger value="rejected">Reddedilen</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="all" className="mt-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="rounded-md border">
+                  <div className="grid grid-cols-8 gap-4 p-4 font-medium border-b">
+                    <div className="col-span-2">Başvuru Sahibi</div>
+                    <div>Ülke</div>
+                    <div>Vize Türü</div>
+                    <div>Randevu</div>
+                    <div>Durum</div>
+                    <div>Ödeme</div>
+                    <div>İşlemler</div>
+                  </div>
+
+                  <TabsContent value="all" className="m-0">
                     {applications.map((app) => (
-                      <ApplicationCard key={app.id} app={app} />
+                      <div
+                        key={app.id}
+                        className={`grid grid-cols-8 gap-4 p-4 items-center ${
+                          app !== applications[applications.length - 1]
+                            ? 'border-b'
+                            : ''
+                        }`}
+                      >
+                        <div className="col-span-2">
+                          <div className="font-medium">{app.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {app.id}
+                          </div>
+                        </div>
+                        <div>{app.status}</div>
+                        <div>{app.category}</div>
+                        <div className="flex items-center">
+                          <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
+                          <span>
+                            {app.status === 'active'
+                              ? 'Aktif'
+                              : app.status === 'pending'
+                                ? 'Beklemede'
+                                : app.status === 'development'
+                                  ? 'Geliştiriliyor'
+                                  : 'Pasif'}
+                          </span>
+                        </div>
+                        <div className={getStatusColor(app.status)}>
+                          {getStatusIcon(app.status)}
+                        </div>
+                        <div
+                          className={getPaymentStatusColor(
+                            app.status === 'active' ? 'Ödendi' : 'Beklemede',
+                          )}
+                        >
+                          {app.status === 'active' ? 'Ödendi' : 'Beklemede'}
+                        </div>
+                        <div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem>
+                                <Eye className="mr-2 h-4 w-4" />
+                                <span>Görüntüle</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Edit className="mr-2 h-4 w-4" />
+                                <span>Düzenle</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem className="text-red-600">
+                                <Trash className="mr-2 h-4 w-4" />
+                                <span>Sil</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
                     ))}
-                  </div>
-                </TabsContent>
+                  </TabsContent>
 
-                <TabsContent value="business" className="mt-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <TabsContent value="pending" className="m-0">
                     {applications
-                      .filter((app) => app.category === 'business')
-                      .map((app) => (
-                        <ApplicationCard key={app.id} app={app} />
+                      .filter((app) => app.status === 'pending')
+                      .map((app, index, filtered) => (
+                        <div
+                          key={app.id}
+                          className={`grid grid-cols-8 gap-4 p-4 items-center ${
+                            index !== filtered.length - 1 ? 'border-b' : ''
+                          }`}
+                        >
+                          <div className="col-span-2">
+                            <div className="font-medium">{app.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {app.id}
+                            </div>
+                          </div>
+                          <div>{app.status}</div>
+                          <div>{app.category}</div>
+                          <div className="flex items-center">
+                            <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
+                            <span>
+                              {app.status === 'pending' ? 'Beklemede' : ''}
+                            </span>
+                          </div>
+                          <div className={getStatusColor(app.status)}>
+                            {getStatusIcon(app.status)}
+                          </div>
+                          <div
+                            className={getPaymentStatusColor(
+                              app.status === 'active' ? 'Ödendi' : 'Beklemede',
+                            )}
+                          >
+                            {app.status === 'active' ? 'Ödendi' : 'Beklemede'}
+                          </div>
+                          <div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  <span>Görüntüle</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  <span>Düzenle</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="text-red-600">
+                                  <Trash className="mr-2 h-4 w-4" />
+                                  <span>Sil</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
                       ))}
-                  </div>
-                </TabsContent>
+                  </TabsContent>
 
-                <TabsContent value="productivity" className="mt-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <TabsContent value="approved" className="m-0">
                     {applications
-                      .filter((app) => app.category === 'productivity')
-                      .map((app) => (
-                        <ApplicationCard key={app.id} app={app} />
+                      .filter((app) => app.status === 'active')
+                      .map((app, index, filtered) => (
+                        <div
+                          key={app.id}
+                          className={`grid grid-cols-8 gap-4 p-4 items-center ${
+                            index !== filtered.length - 1 ? 'border-b' : ''
+                          }`}
+                        >
+                          <div className="col-span-2">
+                            <div className="font-medium">{app.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {app.id}
+                            </div>
+                          </div>
+                          <div>{app.status}</div>
+                          <div>{app.category}</div>
+                          <div className="flex items-center">
+                            <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
+                            <span>
+                              {app.status === 'active' ? 'Aktif' : ''}
+                            </span>
+                          </div>
+                          <div className={getStatusColor(app.status)}>
+                            {getStatusIcon(app.status)}
+                          </div>
+                          <div
+                            className={getPaymentStatusColor(
+                              app.status === 'active' ? 'Ödendi' : '',
+                            )}
+                          >
+                            {app.status === 'active' ? 'Ödendi' : ''}
+                          </div>
+                          <div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  <span>Görüntüle</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  <span>Düzenle</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="text-red-600">
+                                  <Trash className="mr-2 h-4 w-4" />
+                                  <span>Sil</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
                       ))}
-                  </div>
-                </TabsContent>
+                  </TabsContent>
 
-                <TabsContent value="development" className="mt-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <TabsContent value="rejected" className="m-0">
                     {applications
-                      .filter((app) => app.category === 'development')
-                      .map((app) => (
-                        <ApplicationCard key={app.id} app={app} />
+                      .filter((app) => app.status === 'inactive')
+                      .map((app, index, filtered) => (
+                        <div
+                          key={app.id}
+                          className={`grid grid-cols-8 gap-4 p-4 items-center ${
+                            index !== filtered.length - 1 ? 'border-b' : ''
+                          }`}
+                        >
+                          <div className="col-span-2">
+                            <div className="font-medium">{app.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {app.id}
+                            </div>
+                          </div>
+                          <div>{app.status}</div>
+                          <div>{app.category}</div>
+                          <div className="flex items-center">
+                            <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
+                            <span>
+                              {app.status === 'inactive' ? 'Pasif' : ''}
+                            </span>
+                          </div>
+                          <div className={getStatusColor(app.status)}>
+                            {getStatusIcon(app.status)}
+                          </div>
+                          <div
+                            className={getPaymentStatusColor(
+                              app.status === 'active' ? 'Ödendi' : '',
+                            )}
+                          >
+                            {app.status === 'active' ? 'Ödendi' : ''}
+                          </div>
+                          <div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  <span>Görüntüle</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  <span>Düzenle</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem className="text-red-600">
+                                  <Trash className="mr-2 h-4 w-4" />
+                                  <span>Sil</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
                       ))}
-                  </div>
-                </TabsContent>
+                  </TabsContent>
+                </div>
               </Tabs>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Uygulama Erişimi</CardTitle>
-              <CardDescription>
-                Uygulamalara erişim hakkında bilgiler
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-lg bg-muted p-4">
-                <h3 className="text-sm font-medium mb-2">
-                  Tek Oturum Açma (SSO)
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Quickesta hesabınızla tüm uygulamalara tek tıklamayla
-                  erişebilirsiniz. Tek Oturum Açma (SSO) teknolojisi sayesinde
-                  her uygulama için ayrı giriş yapmanıza gerek kalmaz.
-                </p>
-              </div>
-
-              <div className="rounded-lg bg-muted p-4">
-                <h3 className="text-sm font-medium mb-2">Erişim İzinleri</h3>
-                <p className="text-sm text-muted-foreground">
-                  Uygulamalara erişim izinleriniz, hesabınızdaki rol ve
-                  yetkilerinize göre belirlenir. Erişim izni olmayan uygulamalar
-                  için yöneticinizle iletişime geçebilirsiniz.
-                </p>
-              </div>
             </CardContent>
           </Card>
         </div>

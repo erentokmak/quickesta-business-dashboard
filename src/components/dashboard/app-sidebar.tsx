@@ -16,6 +16,17 @@ import {
   Smartphone,
   Home,
   AppWindow,
+  Plane,
+  CheckCircle,
+  XCircle,
+  Globe,
+  Calendar,
+  CreditCard as CreditCardIcon,
+  FileCheck,
+  ClipboardList,
+  UserPlus,
+  FileText as FileTextIcon,
+  Send,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'  
 import { usePathname } from 'next/navigation'
@@ -31,7 +42,7 @@ import {
   SidebarRail,
 } from '@/ui/sidebar'
 
-// This is the actual data for Quickesta Accounts Dashboard
+// This is the actual data for Quickesta Visa Dashboard
 const getDefaultData = (sessionUser: any, currentPath: string) => ({
   user: {
     name: `${sessionUser?.name || ''} ${sessionUser?.surname || ''}`.trim(),
@@ -40,8 +51,8 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
   },
   teams: [
     {
-      name: 'Hesaplar Merkezi',
-      logo: Store,
+      name: 'Visa Dashboard',
+      logo: Plane,
       plan: 'Enterprise',
     },
   ],
@@ -63,34 +74,118 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
       ],
     },
     {
-      title: 'Uygulamalar',
-      url: '/applications',
-      icon: AppWindow,
-      isActive: currentPath.startsWith('/applications'),
+      title: 'İstatistikler',
+      url: '/statistics',
+      icon: BarChart3,
+      isActive: currentPath.startsWith('/statistics'),
       items: [
         {
-          title: 'Tüm Uygulamalar',
-          url: '/applications',
+          title: 'Onay/Red Oranları',
+          url: '/statistics/approval-rates',
+        },
+        {
+          title: 'Tercih Edilen Ülkeler',
+          url: '/statistics/popular-countries',
+        },
+        {
+          title: 'Başvuru Sayıları',
+          url: '/statistics/application-counts',
         },
       ],
     },
     {
-      title: 'Güvenlik',
-      url: '/settings/security',
-      icon: Shield,
+      title: 'Başvurular',
+      url: '/applications',
+      icon: FileCheck,
+      isActive: currentPath.startsWith('/applications'),
+      items: [
+        {
+          title: 'Tüm Başvurular',
+          url: '/applications',
+        },
+        {
+          title: 'Son Randevular',
+          url: '/applications/recent-appointments',
+        },
+        {
+          title: 'Yeni Başvuru',
+          url: '/applications/new',
+        },
+      ],
+    },
+    {
+      title: 'Ülkeler',
+      url: '/countries',
+      icon: Globe,
+      isActive: currentPath.startsWith('/countries'),
+      items: [
+        {
+          title: 'Ülke Listesi',
+          url: '/countries',
+        },
+      ],
+    },
+    {
+      title: 'Ödemeler',
+      url: '/payments',
+      icon: CreditCardIcon,
+      isActive: currentPath.startsWith('/payments'),
+      items: [
+        {
+          title: 'Ödeme Durumu',
+          url: '/payments/status',
+        },
+        {
+          title: 'Ödeme Geçmişi',
+          url: '/payments/history',
+        },
+      ],
+    },
+    {
+      title: 'Müşteriler',
+      url: '/customers',
+      icon: Users,
+      isActive: currentPath.startsWith('/customers'),
+      items: [
+        {
+          title: 'Müşteri Listesi',
+          url: '/customers',
+        },
+        {
+          title: 'Yeni Müşteri',
+          url: '/customers/new',
+        },
+        {
+          title: 'Bilgilendirme Formları',
+          url: '/customers/forms',
+        },
+      ],
+    },
+    {
+      title: 'Şirketler',
+      url: '/companies',
+      icon: Building2,
+      isActive: currentPath.startsWith('/companies'),
+      items: [
+        {
+          title: 'Şirket Listesi',
+          url: '/companies',
+        },
+      ],
+    },
+    {
+      title: 'Ayarlar',
+      url: '/settings',
+      icon: Settings2,
       isActive: currentPath.startsWith('/settings'),
       items: [
         {
-          title: 'Güvenlik Ayarları',
+          title: 'Profil Ayarları',
+          url: '/settings/profile',
+        },
+        {
+          title: 'Güvenlik',
           url: '/settings/security',
-        },
-        {
-          title: 'Cihaz Yönetimi',
-          url: '/settings/devices',
-        },
-        {
-          title: 'Hesaplarım',
-          url: '/settings/accounts',
         },
       ],
     },

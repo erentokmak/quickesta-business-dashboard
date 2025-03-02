@@ -5,6 +5,11 @@ export async function middleware(req) {
   const token = await getToken({ req })
   const { pathname } = req.nextUrl
 
+  // Allow access to SSO page
+  if (pathname.startsWith('/auth/sso')) {
+    return NextResponse.next()
+  }
+
   // Sadece superadmin'in erişebileceği sayfalar
   if (
     pathname.startsWith('/credits') ||
@@ -20,5 +25,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-  matcher: ['/credits', '/users', '/roles'],
+  matcher: ['/credits', '/users', '/roles', '/auth/sso'],
 }
