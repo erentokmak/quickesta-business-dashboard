@@ -15,8 +15,9 @@ import {
   Shield,
   Smartphone,
   Home,
+  AppWindow,
 } from 'lucide-react'
-import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'  
 import { usePathname } from 'next/navigation'
 
 import { NavMain } from '@/components/dashboard/nav-main'
@@ -58,6 +59,18 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
         {
           title: 'Profil Ayarları',
           url: '/settings/profile',
+        },
+      ],
+    },
+    {
+      title: 'Uygulamalar',
+      url: '/applications',
+      icon: AppWindow,
+      isActive: currentPath.startsWith('/applications'),
+      items: [
+        {
+          title: 'Tüm Uygulamalar',
+          url: '/applications',
         },
       ],
     },
