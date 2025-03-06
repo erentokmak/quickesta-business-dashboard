@@ -38,6 +38,7 @@ import {
   Download,
   Plane,
   Building2,
+  Home,
 } from 'lucide-react'
 import Link from 'next/link'
 import { Progress } from '@/ui/progress'
@@ -112,7 +113,10 @@ export default function Page() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <PageHeader title="Visa Dashboard" />
+        <div className="flex items-center gap-2 px-4 py-2 border-b">
+          <Home className="h-5 w-5" />
+          <h1 className="text-xl font-semibold">Anasayfa</h1>
+        </div>
         <div className="flex flex-1 flex-col gap-6 p-6">
           <Card>
             <CardHeader>
@@ -132,12 +136,12 @@ export default function Page() {
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-col items-center justify-center space-y-2">
-                      <div className="text-4xl font-bold">
+                      <div className={`text-4xl font-bold ${approvalRateData.overall >= 70 ? 'text-green-500' : approvalRateData.overall >= 50 ? 'text-yellow-500' : 'text-red-500'}`}>
                         {approvalRateData.overall}%
                       </div>
                       <Progress
                         value={approvalRateData.overall}
-                        className="h-2 w-full"
+                        className={`h-2 w-full ${approvalRateData.overall >= 70 ? 'bg-green-500' : approvalRateData.overall >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
                       />
                       <div className="text-xs text-muted-foreground">
                         Son 6 ay ortalaması

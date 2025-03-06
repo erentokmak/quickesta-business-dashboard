@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { ChevronsUpDown, Plus } from 'lucide-react'
+import { ChevronsUpDown, Plus, Settings, User } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import {
   DropdownMenu,
@@ -98,6 +99,19 @@ export function TeamSwitcher({
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="gap-2 p-2" asChild>
+              <Link href="/settings/profile">
+                <User className="size-4" />
+                <span>Profil Ayarları</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2 p-2" asChild>
+              <Link href="/settings">
+                <Settings className="size-4" />
+                <span>Genel Ayarlar</span>
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2">
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">

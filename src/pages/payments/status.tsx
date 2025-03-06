@@ -37,6 +37,15 @@ import {
   DropdownMenuTrigger,
 } from '@/ui/dropdown-menu'
 import { Progress } from '@/ui/progress'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/ui/dialog"
+import React from 'react'
 
 // Dummy data for payments
 const paymentsData = [
@@ -135,6 +144,8 @@ const paymentSummary = {
 };
 
 export default function PaymentStatusPage() {
+  const [selectedPayment, setSelectedPayment] = React.useState<any>(null)
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Tamamlandı':
@@ -272,52 +283,110 @@ export default function PaymentStatusPage() {
                 </div>
                 <div>
                   {paymentsData.map((payment, index) => (
-                    <div
-                      key={payment.id}
-                      className={`grid grid-cols-7 gap-4 p-4 items-center ${
-                        index !== paymentsData.length - 1 ? 'border-b' : ''
-                      }`}
-                    >
-                      <div className="font-medium">{payment.id}</div>
-                      <div className="font-medium">{payment.customer}</div>
-                      <div>{payment.amount}</div>
-                      <div>{payment.date}</div>
-                      <div>{getStatusBadge(payment.status)}</div>
-                      <div>{payment.method}</div>
-                      <div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
-                            <DropdownMenuItem>
-                              <Eye className="mr-2 h-4 w-4" />
-                              Detayları Görüntüle
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Download className="mr-2 h-4 w-4" />
-                              Fatura İndir
-                            </DropdownMenuItem>
-                            {payment.status === 'Beklemede' && (
-                              <>
-                                <DropdownMenuSeparator />
+                    <Dialog key={payment.id}>
+                      <DialogTrigger asChild>
+                        <div
+                          className={`grid grid-cols-7 gap-4 p-4 items-center cursor-pointer hover:bg-muted/50 ${
+                            index !== paymentsData.length - 1 ? 'border-b' : ''
+                          }`}
+                          onClick={() => setSelectedPayment(payment)}
+                        >
+                          <div className="font-medium">{payment.id}</div>
+                          <div className="font-medium">{payment.customer}</div>
+                          <div>{payment.amount}</div>
+                          <div>{payment.date}</div>
+                          <div>{getStatusBadge(payment.status)}</div>
+                          <div>{payment.method}</div>
+                          <div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
                                 <DropdownMenuItem>
-                                  <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
-                                  Ödemeyi Onayla
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Detayları Görüntüle
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                  <XCircle className="mr-2 h-4 w-4 text-red-500" />
-                                  Ödemeyi İptal Et
+                                  <Download className="mr-2 h-4 w-4" />
+                                  Fatura İndir
                                 </DropdownMenuItem>
-                              </>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
+                                {payment.status === 'Beklemede' && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>
+                                      <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                                      Ödemeyi Onayla
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                      <XCircle className="mr-2 h-4 w-4 text-red-500" />
+                                      Ödemeyi İptal Et
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Ödeme Detayları</DialogTitle>
+                          <DialogDescription>
+                            {selectedPayment?.customer} tarafından yapılan ödeme detayları
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Ödeme ID</p>
+                              <p className="text-sm">{selectedPayment?.id}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Müşteri</p>
+                              <p className="text-sm">{selectedPayment?.customer}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Tutar</p>
+                              <p className="text-sm">{selectedPayment?.amount}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Tarih</p>
+                              <p className="text-sm">{selectedPayment?.date}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Durum</p>
+                              <div className="mt-1">{getStatusBadge(selectedPayment?.status)}</div>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Ödeme Yöntemi</p>
+                              <p className="text-sm">{selectedPayment?.method}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Başvuru</p>
+                              <p className="text-sm">{selectedPayment?.application}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Fatura No</p>
+                              <p className="text-sm">{selectedPayment?.invoice}</p>
+                            </div>
+                          </div>
+                          {selectedPayment?.status === 'Beklemede' && (
+                            <div className="pt-4 border-t">
+                              <h4 className="text-sm font-medium mb-2">Bekleyen Ödeme Bilgileri</h4>
+                              <div className="bg-yellow-50 p-4 rounded-lg">
+                                <p className="text-sm text-yellow-800">
+                                  Bu ödeme henüz tamamlanmamıştır. Müşteri tarafından ödeme yapılması beklenmektedir.
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   ))}
                 </div>
               </div>
