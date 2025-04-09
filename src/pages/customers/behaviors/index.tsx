@@ -1,107 +1,121 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/router"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card"
 import { ScrollArea } from "@/ui/scroll-area"
 import { Button } from "@/ui/button"
 import { Input } from "@/ui/input"
-import { Label } from "@/ui/label"
 import { SidebarProvider, SidebarInset } from "@/ui/sidebar"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/ui/table"
 import { 
-  Users,
-  Plus,
-  Search,
-  MoreHorizontal,
-  Edit,
-  Trash,
-  Filter,
-  UserPlus,
-  Calendar,
-  Activity,
-  ShoppingCart,
-  Clock,
-  TrendingUp
-} from "lucide-react"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu"
+import { 
+  Search,
+  MoreHorizontal,
+  Plus,
+  Users,
+  Tag,
+  Activity,
+  UserPlus,
+  Edit,
+  Trash,
+  ArrowLeft,
+  ChevronRight,
+  BarChart,
+  Users as UsersIcon,
+  DollarSign,
+  Clock
+} from "lucide-react"
 
-// Örnek müşteri davranışları verisi
+// Örnek müşteri davranışları
 const customerBehaviors = [
   {
     id: "1",
-    name: "Hızlı Alışveriş Yapanlar",
+    name: "Hızlı Alışveriş",
     description: "Ortalama alışveriş süresi 5 dakikadan az olan müşteriler",
     criteria: "Ortalama alışveriş süresi < 5 dakika",
-    memberCount: 45,
-    avgOrderValue: 850,
-    frequency: "Haftalık",
-    lastUpdated: "2024-03-20",
+    frequency: "daily",
+    memberCount: 25,
+    lastUpdated: "2024-02-20",
   },
   {
     id: "2",
-    name: "Detaylı İnceleyenler",
-    description: "Ürün sayfalarında ortalama 3 dakikadan fazla zaman geçiren müşteriler",
-    criteria: "Ortalama sayfa görüntüleme süresi > 3 dakika",
-    memberCount: 38,
-    avgOrderValue: 1200,
-    frequency: "Aylık",
-    lastUpdated: "2024-03-21",
+    name: "Gece Alışverişi",
+    description: "Gece 22:00 - 06:00 arası alışveriş yapan müşteriler",
+    criteria: "Alışveriş saati 22:00 - 06:00 arası",
+    frequency: "daily",
+    memberCount: 15,
+    lastUpdated: "2024-02-18",
   },
   {
     id: "3",
-    name: "Sepet Terk Edenler",
-    description: "Sepete ürün ekleyip satın almayı tamamlamayan müşteriler",
-    criteria: "Sepet terk oranı > %50",
-    memberCount: 62,
-    avgOrderValue: 0,
-    frequency: "Haftalık",
-    lastUpdated: "2024-03-19",
+    name: "Hafta Sonu Alışverişi",
+    description: "Sadece hafta sonları alışveriş yapan müşteriler",
+    criteria: "Alışveriş günü Cumartesi veya Pazar",
+    frequency: "weekly",
+    memberCount: 35,
+    lastUpdated: "2024-02-15",
   },
   {
     id: "4",
-    name: "İndirim Avcıları",
-    description: "Sadece indirimli ürünleri satın alan müşteriler",
-    criteria: "İndirimli ürün alım oranı > %80",
-    memberCount: 29,
-    avgOrderValue: 650,
-    frequency: "Aylık",
-    lastUpdated: "2024-03-18",
+    name: "Sezonsal Alışveriş",
+    description: "Belirli sezonlarda yoğun alışveriş yapan müşteriler",
+    criteria: "Yaz sezonu alışverişleri > kış sezonu alışverişleri",
+    frequency: "monthly",
+    memberCount: 20,
+    lastUpdated: "2024-02-10",
   },
   {
     id: "5",
-    name: "Mobil Alışverişçiler",
-    description: "Primer olarak mobil uygulama üzerinden alışveriş yapan müşteriler",
-    criteria: "Mobil alışveriş oranı > %90",
-    memberCount: 53,
-    avgOrderValue: 750,
-    frequency: "Haftalık",
-    lastUpdated: "2024-03-17",
+    name: "İndirim Takipçisi",
+    description: "Sadece indirimli ürünleri satın alan müşteriler",
+    criteria: "İndirimli ürün oranı > %80",
+    frequency: "monthly",
+    memberCount: 30,
+    lastUpdated: "2024-02-08",
   },
 ]
 
 export default function CustomerBehaviorsPage() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Arama sorgusuna göre müşteri davranışlarını filtrele
+  // Davranışları filtrele
   const filteredBehaviors = customerBehaviors.filter(behavior => 
     behavior.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     behavior.description.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  // Sıklık etiketini formatla
+  const formatFrequency = (frequency: string) => {
+    switch (frequency) {
+      case "daily":
+        return "Günlük"
+      case "weekly":
+        return "Haftalık"
+      case "monthly":
+        return "Aylık"
+      case "quarterly":
+        return "3 Aylık"
+      case "yearly":
+        return "Yıllık"
+      default:
+        return frequency
+    }
+  }
 
   return (
     <SidebarProvider>
@@ -111,15 +125,34 @@ export default function CustomerBehaviorsPage() {
           <div className="border-b">
             <div className="flex items-center justify-between p-4">
               <div className="space-y-1">
-                <h2 className="text-2xl font-semibold tracking-tight">Müşteri Davranışları</h2>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => router.push("/customers")}
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <h2 className="text-2xl font-semibold tracking-tight">Müşteri Davranışları</h2>
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  Müşteri davranışlarınızı analiz edin ve yönetin
+                  Müşteri davranışlarını yönetin ve analiz edin
                 </p>
               </div>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Yeni Davranış Tanımla
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button onClick={() => router.push("/customers/groups")}>
+                  <Users className="h-4 w-4 mr-2" />
+                  Gruplar
+                </Button>
+                <Button onClick={() => router.push("/customers/segments")}>
+                  <Tag className="h-4 w-4 mr-2" />
+                  Segmentler
+                </Button>
+                <Button onClick={() => router.push("/customers/behaviors/create")}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Yeni Davranış
+                </Button>
+              </div>
             </div>
           </div>
           <ScrollArea className="flex-1">
@@ -131,129 +164,107 @@ export default function CustomerBehaviorsPage() {
                     <Activity className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">5</div>
+                    <div className="text-2xl font-bold">{customerBehaviors.length}</div>
                     <p className="text-xs text-muted-foreground">
-                      Tanımlı davranış sayısı
+                      Aktif müşteri davranışı
                     </p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Toplam Müşteri</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <UsersIcon className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">227</div>
+                    <div className="text-2xl font-bold">
+                      {customerBehaviors.reduce((acc, behavior) => acc + behavior.memberCount, 0)}
+                    </div>
                     <p className="text-xs text-muted-foreground">
-                      Davranış gruplarındaki toplam müşteri
+                      Tüm davranışlardaki toplam müşteri
                     </p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Ortalama Sipariş Değeri</CardTitle>
-                    <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Ortalama Grup Büyüklüğü</CardTitle>
+                    <UsersIcon className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">890 ₺</div>
+                    <div className="text-2xl font-bold">
+                      {Math.round(customerBehaviors.reduce((acc, behavior) => acc + behavior.memberCount, 0) / customerBehaviors.length)}
+                    </div>
                     <p className="text-xs text-muted-foreground">
-                      Tüm davranış gruplarının ortalama sipariş değeri
+                      Davranış başına ortalama müşteri
                     </p>
                   </CardContent>
                 </Card>
               </div>
 
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Davranış ara..."
+                    className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Müşteri Davranışları</CardTitle>
-                      <CardDescription>
-                        Tüm müşteri davranışlarınızı görüntüleyin ve yönetin
-                      </CardDescription>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="relative">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Davranış ara..."
-                          className="pl-8 w-[250px]"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                      </div>
-                      <Button variant="outline">
-                        <Filter className="w-4 h-4 mr-2" />
-                        Filtrele
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Davranış Adı</TableHead>
                         <TableHead>Açıklama</TableHead>
                         <TableHead>Kriterler</TableHead>
-                        <TableHead>Üye Sayısı</TableHead>
-                        <TableHead>Ort. Sipariş Değeri</TableHead>
                         <TableHead>Sıklık</TableHead>
+                        <TableHead>Üye Sayısı</TableHead>
                         <TableHead>Son Güncelleme</TableHead>
-                        <TableHead className="text-right">İşlemler</TableHead>
+                        <TableHead className="w-[50px]"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredBehaviors.map((behavior) => (
                         <TableRow key={behavior.id}>
-                          <TableCell className="font-medium">{behavior.name}</TableCell>
+                          <TableCell>
+                            <div className="font-medium">{behavior.name}</div>
+                          </TableCell>
                           <TableCell>{behavior.description}</TableCell>
                           <TableCell>{behavior.criteria}</TableCell>
-                          <TableCell>{behavior.memberCount}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1">
-                              <ShoppingCart className="h-3 w-3 text-muted-foreground" />
-                              <span>{behavior.avgOrderValue} ₺</span>
-                            </div>
-                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-1">
                               <Clock className="h-3 w-3 text-muted-foreground" />
-                              <span>{behavior.frequency}</span>
+                              {formatFrequency(behavior.frequency)}
                             </div>
                           </TableCell>
+                          <TableCell>{behavior.memberCount}</TableCell>
+                          <TableCell>{behavior.lastUpdated}</TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3 text-muted-foreground" />
-                              <span>{behavior.lastUpdated}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                  <span className="sr-only">Menüyü aç</span>
+                                <Button variant="ghost" size="icon">
                                   <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
                                 <DropdownMenuItem>
-                                  <Users className="mr-2 h-4 w-4" />
-                                  <span>Üyeleri Görüntüle</span>
+                                  <UsersIcon className="h-4 w-4 mr-2" />
+                                  Üyeleri Görüntüle
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                  <TrendingUp className="mr-2 h-4 w-4" />
-                                  <span>Analiz Et</span>
+                                  <BarChart className="h-4 w-4 mr-2" />
+                                  Analiz Et
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  <span>Düzenle</span>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Düzenle
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
                                 <DropdownMenuItem className="text-red-600">
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  <span>Sil</span>
+                                  <Trash className="h-4 w-4 mr-2" />
+                                  Sil
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>

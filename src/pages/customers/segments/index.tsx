@@ -1,96 +1,98 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/router"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card"
 import { ScrollArea } from "@/ui/scroll-area"
 import { Button } from "@/ui/button"
 import { Input } from "@/ui/input"
-import { Label } from "@/ui/label"
 import { SidebarProvider, SidebarInset } from "@/ui/sidebar"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/ui/table"
 import { 
-  Users,
-  Plus,
-  Search,
-  MoreHorizontal,
-  Edit,
-  Trash,
-  Filter,
-  UserPlus,
-  Calendar,
-  DollarSign,
-  TrendingUp
-} from "lucide-react"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu"
+import { 
+  Search,
+  MoreHorizontal,
+  Plus,
+  Users,
+  Tag,
+  Activity,
+  UserPlus,
+  Edit,
+  Trash,
+  ArrowLeft,
+  ChevronRight,
+  BarChart,
+  Users as UsersIcon,
+  DollarSign
+} from "lucide-react"
 
-// Örnek müşteri segmentleri verisi
+// Örnek müşteri segmentleri
 const customerSegments = [
   {
     id: "1",
     name: "Yüksek Değerli Müşteriler",
-    description: "Son 12 ayda 10.000 TL üzeri harcama yapan müşteriler",
-    criteria: "Toplam harcama > 10.000 TL",
+    description: "Aylık ortalama harcaması 1000₺ üzerinde olan müşteriler",
+    criteria: "Ortalama sepet tutarı > 1000₺",
     memberCount: 25,
-    revenue: 450000,
-    lastUpdated: "2024-03-20",
+    revenue: 45000,
+    lastUpdated: "2024-02-20",
   },
   {
     id: "2",
-    name: "Orta Değerli Müşteriler",
-    description: "Son 12 ayda 5.000-10.000 TL arası harcama yapan müşteriler",
-    criteria: "5.000 TL < Toplam harcama < 10.000 TL",
-    memberCount: 42,
-    revenue: 315000,
-    lastUpdated: "2024-03-21",
-  },
-  {
-    id: "3",
-    name: "Düşük Değerli Müşteriler",
-    description: "Son 12 ayda 5.000 TL altı harcama yapan müşteriler",
-    criteria: "Toplam harcama < 5.000 TL",
-    memberCount: 18,
-    revenue: 72000,
-    lastUpdated: "2024-03-19",
-  },
-  {
-    id: "4",
     name: "Sık Alışveriş Yapanlar",
     description: "Ayda en az 3 kez alışveriş yapan müşteriler",
     criteria: "Aylık sipariş sayısı >= 3",
     memberCount: 35,
-    revenue: 175000,
-    lastUpdated: "2024-03-18",
+    revenue: 28000,
+    lastUpdated: "2024-02-18",
+  },
+  {
+    id: "3",
+    name: "Yeni Müşteriler",
+    description: "Son 30 gün içinde ilk alışverişini yapan müşteriler",
+    criteria: "İlk sipariş tarihi son 30 gün içinde",
+    memberCount: 15,
+    revenue: 7500,
+    lastUpdated: "2024-02-15",
+  },
+  {
+    id: "4",
+    name: "İnaktif Müşteriler",
+    description: "Son 6 ayda alışveriş yapmayan müşteriler",
+    criteria: "Son sipariş tarihi > 180 gün önce",
+    memberCount: 20,
+    revenue: 0,
+    lastUpdated: "2024-02-10",
   },
   {
     id: "5",
     name: "Sezonsal Alışverişçiler",
     description: "Belirli sezonlarda yoğun alışveriş yapan müşteriler",
-    criteria: "Sezonluk alışveriş paterni",
-    memberCount: 12,
-    revenue: 96000,
-    lastUpdated: "2024-03-17",
+    criteria: "Yaz sezonu alışverişleri > kış sezonu alışverişleri",
+    memberCount: 30,
+    revenue: 35000,
+    lastUpdated: "2024-02-08",
   },
 ]
 
 export default function CustomerSegmentsPage() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Arama sorgusuna göre müşteri segmentlerini filtrele
+  // Segmentleri filtrele
   const filteredSegments = customerSegments.filter(segment => 
     segment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     segment.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -104,15 +106,34 @@ export default function CustomerSegmentsPage() {
           <div className="border-b">
             <div className="flex items-center justify-between p-4">
               <div className="space-y-1">
-                <h2 className="text-2xl font-semibold tracking-tight">Müşteri Segmentleri</h2>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => router.push("/customers")}
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <h2 className="text-2xl font-semibold tracking-tight">Müşteri Segmentleri</h2>
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  Müşteri segmentlerinizi yönetin ve analiz edin
+                  Müşteri segmentlerini yönetin ve analiz edin
                 </p>
               </div>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Yeni Segment Oluştur
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button onClick={() => router.push("/customers/groups")}>
+                  <Users className="h-4 w-4 mr-2" />
+                  Gruplar
+                </Button>
+                <Button onClick={() => router.push("/customers/behaviors")}>
+                  <Activity className="h-4 w-4 mr-2" />
+                  Davranışlar
+                </Button>
+                <Button onClick={() => router.push("/customers/segments/create")}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Yeni Segment
+                </Button>
+              </div>
             </div>
           </div>
           <ScrollArea className="flex-1">
@@ -121,10 +142,10 @@ export default function CustomerSegmentsPage() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Toplam Segment</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <Tag className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">5</div>
+                    <div className="text-2xl font-bold">{customerSegments.length}</div>
                     <p className="text-xs text-muted-foreground">
                       Aktif müşteri segmenti
                     </p>
@@ -133,10 +154,12 @@ export default function CustomerSegmentsPage() {
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Toplam Müşteri</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <UsersIcon className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">132</div>
+                    <div className="text-2xl font-bold">
+                      {customerSegments.reduce((acc, segment) => acc + segment.memberCount, 0)}
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       Tüm segmentlerdeki toplam müşteri
                     </p>
@@ -148,41 +171,30 @@ export default function CustomerSegmentsPage() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">1.108.000 ₺</div>
+                    <div className="text-2xl font-bold">
+                      {customerSegments.reduce((acc, segment) => acc + segment.revenue, 0).toLocaleString("tr-TR")} ₺
+                    </div>
                     <p className="text-xs text-muted-foreground">
-                      Tüm segmentlerden gelen toplam gelir
+                      Tüm segmentlerden elde edilen gelir
                     </p>
                   </CardContent>
                 </Card>
               </div>
 
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Segment ara..."
+                    className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Müşteri Segmentleri</CardTitle>
-                      <CardDescription>
-                        Tüm müşteri segmentlerinizi görüntüleyin ve yönetin
-                      </CardDescription>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="relative">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Segment ara..."
-                          className="pl-8 w-[250px]"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                      </div>
-                      <Button variant="outline">
-                        <Filter className="w-4 h-4 mr-2" />
-                        Filtrele
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -192,54 +204,43 @@ export default function CustomerSegmentsPage() {
                         <TableHead>Üye Sayısı</TableHead>
                         <TableHead>Gelir</TableHead>
                         <TableHead>Son Güncelleme</TableHead>
-                        <TableHead className="text-right">İşlemler</TableHead>
+                        <TableHead className="w-[50px]"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredSegments.map((segment) => (
                         <TableRow key={segment.id}>
-                          <TableCell className="font-medium">{segment.name}</TableCell>
+                          <TableCell>
+                            <div className="font-medium">{segment.name}</div>
+                          </TableCell>
                           <TableCell>{segment.description}</TableCell>
                           <TableCell>{segment.criteria}</TableCell>
                           <TableCell>{segment.memberCount}</TableCell>
+                          <TableCell>{segment.revenue.toLocaleString("tr-TR")} ₺</TableCell>
+                          <TableCell>{segment.lastUpdated}</TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-1">
-                              <DollarSign className="h-3 w-3 text-muted-foreground" />
-                              <span>{segment.revenue.toLocaleString()} ₺</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3 text-muted-foreground" />
-                              <span>{segment.lastUpdated}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                  <span className="sr-only">Menüyü aç</span>
+                                <Button variant="ghost" size="icon">
                                   <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
                                 <DropdownMenuItem>
-                                  <Users className="mr-2 h-4 w-4" />
-                                  <span>Üyeleri Görüntüle</span>
+                                  <UsersIcon className="h-4 w-4 mr-2" />
+                                  Üyeleri Görüntüle
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                  <TrendingUp className="mr-2 h-4 w-4" />
-                                  <span>Analiz Et</span>
+                                  <BarChart className="h-4 w-4 mr-2" />
+                                  Analiz Et
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  <span>Düzenle</span>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Düzenle
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
                                 <DropdownMenuItem className="text-red-600">
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  <span>Sil</span>
+                                  <Trash className="h-4 w-4 mr-2" />
+                                  Sil
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
