@@ -1,3 +1,5 @@
+"use client"
+
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SidebarInset, SidebarProvider } from '@/ui/sidebar'
@@ -34,6 +36,8 @@ import {
 } from '@/ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/tabs'
 import Link from 'next/link'
+import { ScrollArea } from "@/ui/scroll-area"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table"
 
 // Dummy data for customers
 const customersData = [
@@ -224,371 +228,75 @@ export default function CustomersPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="all">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="all">Tümü</TabsTrigger>
-                  <TabsTrigger value="individual">Bireysel</TabsTrigger>
-                  <TabsTrigger value="corporate">Kurumsal</TabsTrigger>
-                  <TabsTrigger value="active">Aktif</TabsTrigger>
-                  <TabsTrigger value="inactive">Pasif</TabsTrigger>
-                </TabsList>
-
-                <div className="rounded-md border">
-                  <div className="grid grid-cols-7 gap-4 p-4 font-medium border-b">
-                    <div className="col-span-2">Müşteri</div>
-                    <div>İletişim</div>
-                    <div>Başvurular</div>
-                    <div>Son Başvuru</div>
-                    <div>Durum</div>
-                    <div>İşlemler</div>
+              <ScrollArea className="h-full">
+                <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-3xl font-bold tracking-tight">Müşteriler</h2>
+                    <Button asChild>
+                      <Link href="/customers/new">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Yeni Müşteri
+                      </Link>
+                    </Button>
                   </div>
-
-                  <TabsContent value="all" className="m-0">
-                    {customersData.map((customer, index) => (
-                      <div
-                        key={customer.id}
-                        className={`grid grid-cols-7 gap-4 p-4 items-center ${
-                          index !== customersData.length - 1 ? 'border-b' : ''
-                        }`}
-                      >
-                        <div className="col-span-2">
-                          <div className="font-medium">{customer.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {customer.id} - {customer.type}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex items-center text-sm">
-                            <Mail className="mr-1 h-4 w-4 text-muted-foreground" />
-                            <span className="truncate max-w-[150px]">{customer.email}</span>
-                          </div>
-                          <div className="flex items-center text-sm">
-                            <Phone className="mr-1 h-4 w-4 text-muted-foreground" />
-                            <span>{customer.phone}</span>
-                          </div>
-                        </div>
-                        <div className="text-center">{customer.applications}</div>
-                        <div>{customer.lastApplication}</div>
-                        <div>
-                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            customer.status === 'Aktif' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {customer.status}
-                          </span>
-                        </div>
-                        <div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem>
-                                <Eye className="mr-2 h-4 w-4" />
-                                <span>Görüntüle</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Edit className="mr-2 h-4 w-4" />
-                                <span>Düzenle</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <FileText className="mr-2 h-4 w-4" />
-                                <span>Başvuruları Görüntüle</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
-                                <Trash className="mr-2 h-4 w-4" />
-                                <span>Sil</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Müşteri Listesi</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center py-4">
+                        <div className="relative w-full max-w-sm">
+                          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Müşteri ara..."
+                            className="pl-8"
+                          />
                         </div>
                       </div>
-                    ))}
-                  </TabsContent>
-
-                  <TabsContent value="individual" className="m-0">
-                    {customersData
-                      .filter(customer => customer.type === 'Bireysel')
-                      .map((customer, index, filtered) => (
-                        <div
-                          key={customer.id}
-                          className={`grid grid-cols-7 gap-4 p-4 items-center ${
-                            index !== filtered.length - 1 ? 'border-b' : ''
-                          }`}
-                        >
-                          <div className="col-span-2">
-                            <div className="font-medium">{customer.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {customer.id} - {customer.type}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="flex items-center text-sm">
-                              <Mail className="mr-1 h-4 w-4 text-muted-foreground" />
-                              <span className="truncate max-w-[150px]">{customer.email}</span>
-                            </div>
-                            <div className="flex items-center text-sm">
-                              <Phone className="mr-1 h-4 w-4 text-muted-foreground" />
-                              <span>{customer.phone}</span>
-                            </div>
-                          </div>
-                          <div className="text-center">{customer.applications}</div>
-                          <div>{customer.lastApplication}</div>
-                          <div>
-                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                              customer.status === 'Aktif' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-gray-100 text-gray-800'
-                            }`}>
-                              {customer.status}
-                            </span>
-                          </div>
-                          <div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  <span>Görüntüle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  <span>Düzenle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <FileText className="mr-2 h-4 w-4" />
-                                  <span>Başvuruları Görüntüle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600">
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  <span>Sil</span>
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </div>
-                      ))}
-                  </TabsContent>
-
-                  <TabsContent value="corporate" className="m-0">
-                    {customersData
-                      .filter(customer => customer.type === 'Kurumsal')
-                      .map((customer, index, filtered) => (
-                        <div
-                          key={customer.id}
-                          className={`grid grid-cols-7 gap-4 p-4 items-center ${
-                            index !== filtered.length - 1 ? 'border-b' : ''
-                          }`}
-                        >
-                          <div className="col-span-2">
-                            <div className="font-medium">{customer.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {customer.id} - {customer.type}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="flex items-center text-sm">
-                              <Mail className="mr-1 h-4 w-4 text-muted-foreground" />
-                              <span className="truncate max-w-[150px]">{customer.email}</span>
-                            </div>
-                            <div className="flex items-center text-sm">
-                              <Phone className="mr-1 h-4 w-4 text-muted-foreground" />
-                              <span>{customer.phone}</span>
-                            </div>
-                          </div>
-                          <div className="text-center">{customer.applications}</div>
-                          <div>{customer.lastApplication}</div>
-                          <div>
-                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                              customer.status === 'Aktif' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-gray-100 text-gray-800'
-                            }`}>
-                              {customer.status}
-                            </span>
-                          </div>
-                          <div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  <span>Görüntüle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  <span>Düzenle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <FileText className="mr-2 h-4 w-4" />
-                                  <span>Başvuruları Görüntüle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600">
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  <span>Sil</span>
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </div>
-                      ))}
-                  </TabsContent>
-
-                  <TabsContent value="active" className="m-0">
-                    {customersData
-                      .filter(customer => customer.status === 'Aktif')
-                      .map((customer, index, filtered) => (
-                        <div
-                          key={customer.id}
-                          className={`grid grid-cols-7 gap-4 p-4 items-center ${
-                            index !== filtered.length - 1 ? 'border-b' : ''
-                          }`}
-                        >
-                          <div className="col-span-2">
-                            <div className="font-medium">{customer.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {customer.id} - {customer.type}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="flex items-center text-sm">
-                              <Mail className="mr-1 h-4 w-4 text-muted-foreground" />
-                              <span className="truncate max-w-[150px]">{customer.email}</span>
-                            </div>
-                            <div className="flex items-center text-sm">
-                              <Phone className="mr-1 h-4 w-4 text-muted-foreground" />
-                              <span>{customer.phone}</span>
-                            </div>
-                          </div>
-                          <div className="text-center">{customer.applications}</div>
-                          <div>{customer.lastApplication}</div>
-                          <div>
-                            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
-                              {customer.status}
-                            </span>
-                          </div>
-                          <div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  <span>Görüntüle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  <span>Düzenle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <FileText className="mr-2 h-4 w-4" />
-                                  <span>Başvuruları Görüntüle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600">
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  <span>Sil</span>
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </div>
-                      ))}
-                  </TabsContent>
-
-                  <TabsContent value="inactive" className="m-0">
-                    {customersData
-                      .filter(customer => customer.status === 'Pasif')
-                      .map((customer, index, filtered) => (
-                        <div
-                          key={customer.id}
-                          className={`grid grid-cols-7 gap-4 p-4 items-center ${
-                            index !== filtered.length - 1 ? 'border-b' : ''
-                          }`}
-                        >
-                          <div className="col-span-2">
-                            <div className="font-medium">{customer.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {customer.id} - {customer.type}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="flex items-center text-sm">
-                              <Mail className="mr-1 h-4 w-4 text-muted-foreground" />
-                              <span className="truncate max-w-[150px]">{customer.email}</span>
-                            </div>
-                            <div className="flex items-center text-sm">
-                              <Phone className="mr-1 h-4 w-4 text-muted-foreground" />
-                              <span>{customer.phone}</span>
-                            </div>
-                          </div>
-                          <div className="text-center">{customer.applications}</div>
-                          <div>{customer.lastApplication}</div>
-                          <div>
-                            <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800">
-                              {customer.status}
-                            </span>
-                          </div>
-                          <div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  <span>Görüntüle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  <span>Düzenle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <FileText className="mr-2 h-4 w-4" />
-                                  <span>Başvuruları Görüntüle</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600">
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  <span>Sil</span>
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </div>
-                      ))}
-                  </TabsContent>
+                      <div className="rounded-md border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Müşteri</TableHead>
+                              <TableHead>İletişim</TableHead>
+                              <TableHead>Durum</TableHead>
+                              <TableHead>Son Sipariş</TableHead>
+                              <TableHead>Toplam Harcama</TableHead>
+                              <TableHead className="w-[50px]"></TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {customersData.map((customer) => (
+                              <TableRow key={customer.id}>
+                                <TableCell className="font-medium">{customer.name}</TableCell>
+                                <TableCell>
+                                  <div>{customer.email}</div>
+                                  <div className="text-sm text-muted-foreground">{customer.phone}</div>
+                                </TableCell>
+                                <TableCell>
+                                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                                    customer.status === "Aktif" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
+                                  }`}>
+                                    {customer.status}
+                                  </span>
+                                </TableCell>
+                                <TableCell>{customer.lastApplication}</TableCell>
+                                <TableCell>{customer.applications}</TableCell>
+                                <TableCell>
+                                  <Button variant="ghost" size="icon">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </Tabs>
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>
