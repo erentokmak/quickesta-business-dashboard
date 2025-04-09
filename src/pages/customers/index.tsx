@@ -1,113 +1,111 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/router"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card"
 import { ScrollArea } from "@/ui/scroll-area"
 import { Button } from "@/ui/button"
 import { Input } from "@/ui/input"
-import { Label } from "@/ui/label"
 import { SidebarProvider, SidebarInset } from "@/ui/sidebar"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/ui/table"
 import { 
-  Users,
-  Plus,
-  Search,
-  MoreHorizontal,
-  Edit,
-  Trash,
-  Filter,
-  Mail,
-  Phone,
-  MapPin,
-  ShoppingBag,
-  Calendar
-} from "lucide-react"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu"
-import { Badge } from "@/ui/badge"
+import { 
+  Search,
+  MoreHorizontal,
+  Plus,
+  Users,
+  Tag,
+  Activity,
+  UserPlus,
+  UserCog,
+  UserCheck,
+  UserX,
+  Mail,
+  Phone,
+  MapPin,
+  CreditCard,
+  ShoppingBag,
+  Calendar,
+  ChevronRight
+} from "lucide-react"
 
-// Örnek müşteri verisi
+// Örnek müşteri verileri
 const customers = [
   {
     id: "1",
     name: "Ahmet Yılmaz",
-    email: "ahmet.yilmaz@example.com",
+    email: "ahmet@example.com",
     phone: "+90 555 123 4567",
-    address: "İstanbul, Türkiye",
     status: "active",
     totalOrders: 12,
-    totalSpent: "₺4,500",
-    lastOrder: "2024-03-15",
-    createdAt: "2023-01-10",
+    totalSpent: 2500,
+    lastOrder: "2024-02-15",
+    tags: ["VIP", "Yeni Müşteri"],
   },
   {
     id: "2",
     name: "Ayşe Demir",
-    email: "ayse.demir@example.com",
+    email: "ayse@example.com",
     phone: "+90 555 234 5678",
-    address: "Ankara, Türkiye",
     status: "active",
     totalOrders: 8,
-    totalSpent: "₺2,800",
-    lastOrder: "2024-03-10",
-    createdAt: "2023-02-15",
+    totalSpent: 1800,
+    lastOrder: "2024-02-10",
+    tags: ["Düzenli Müşteri"],
   },
   {
     id: "3",
     name: "Mehmet Kaya",
-    email: "mehmet.kaya@example.com",
+    email: "mehmet@example.com",
     phone: "+90 555 345 6789",
-    address: "İzmir, Türkiye",
     status: "inactive",
-    totalOrders: 5,
-    totalSpent: "₺1,200",
-    lastOrder: "2024-02-20",
-    createdAt: "2023-03-20",
+    totalOrders: 3,
+    totalSpent: 450,
+    lastOrder: "2024-01-20",
+    tags: ["Potansiyel"],
   },
   {
     id: "4",
-    name: "Fatma Şahin",
-    email: "fatma.sahin@example.com",
+    name: "Zeynep Şahin",
+    email: "zeynep@example.com",
     phone: "+90 555 456 7890",
-    address: "Bursa, Türkiye",
     status: "active",
     totalOrders: 15,
-    totalSpent: "₺5,600",
-    lastOrder: "2024-03-18",
-    createdAt: "2023-04-25",
+    totalSpent: 3200,
+    lastOrder: "2024-02-18",
+    tags: ["VIP", "Sadık Müşteri"],
   },
   {
     id: "5",
     name: "Ali Öztürk",
-    email: "ali.ozturk@example.com",
+    email: "ali@example.com",
     phone: "+90 555 567 8901",
-    address: "Antalya, Türkiye",
-    status: "inactive",
-    totalOrders: 3,
-    totalSpent: "₺900",
-    lastOrder: "2024-01-30",
-    createdAt: "2023-05-30",
+    status: "active",
+    totalOrders: 6,
+    totalSpent: 1200,
+    lastOrder: "2024-02-05",
+    tags: ["Yeni Müşteri"],
   },
 ]
 
 export default function CustomersPage() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Arama sorgusuna göre müşterileri filtrele
+  // Müşterileri filtrele
   const filteredCustomers = customers.filter(customer => 
     customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -124,165 +122,122 @@ export default function CustomersPage() {
               <div className="space-y-1">
                 <h2 className="text-2xl font-semibold tracking-tight">Müşteriler</h2>
                 <p className="text-sm text-muted-foreground">
-                  Müşterilerinizi görüntüleyin ve yönetin
+                  Müşteri listesi ve yönetimi
                 </p>
               </div>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Yeni Müşteri Ekle
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button onClick={() => router.push("/customers/groups")}>
+                  <Users className="h-4 w-4 mr-2" />
+                  Gruplar
+                </Button>
+                <Button onClick={() => router.push("/customers/segments")}>
+                  <Tag className="h-4 w-4 mr-2" />
+                  Segmentler
+                </Button>
+                <Button onClick={() => router.push("/customers/behaviors")}>
+                  <Activity className="h-4 w-4 mr-2" />
+                  Davranışlar
+                </Button>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Yeni Müşteri
+                </Button>
+              </div>
             </div>
           </div>
           <ScrollArea className="flex-1">
             <div className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Toplam Müşteri</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">5</div>
-                    <p className="text-xs text-muted-foreground">
-                      Kayıtlı müşteri sayısı
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Aktif Müşteriler</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">3</div>
-                    <p className="text-xs text-muted-foreground">
-                      Son 30 günde alışveriş yapan
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Toplam Sipariş</CardTitle>
-                    <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">43</div>
-                    <p className="text-xs text-muted-foreground">
-                      Tüm müşterilerin toplam siparişi
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Toplam Gelir</CardTitle>
-                    <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">₺15,000</div>
-                    <p className="text-xs text-muted-foreground">
-                      Tüm müşterilerden elde edilen gelir
-                    </p>
-                  </CardContent>
-                </Card>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Müşteri ara..."
+                    className="pl-8"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
               </div>
-
               <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Müşteri Listesi</CardTitle>
-                      <CardDescription>
-                        Tüm müşterilerinizi görüntüleyin ve yönetin
-                      </CardDescription>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="relative">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Müşteri ara..."
-                          className="pl-8 w-[250px]"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                      </div>
-                      <Button variant="outline">
-                        <Filter className="w-4 h-4 mr-2" />
-                        Filtrele
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Müşteri</TableHead>
                         <TableHead>İletişim</TableHead>
                         <TableHead>Durum</TableHead>
-                        <TableHead>Sipariş Sayısı</TableHead>
+                        <TableHead>Sipariş</TableHead>
                         <TableHead>Toplam Harcama</TableHead>
                         <TableHead>Son Sipariş</TableHead>
-                        <TableHead className="text-right">İşlemler</TableHead>
+                        <TableHead>Etiketler</TableHead>
+                        <TableHead className="w-[50px]"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredCustomers.map((customer) => (
                         <TableRow key={customer.id}>
                           <TableCell>
-                            <div className="flex flex-col">
-                              <span className="font-medium">{customer.name}</span>
-                              <span className="text-sm text-muted-foreground">
-                                {customer.address}
-                              </span>
-                            </div>
+                            <div className="font-medium">{customer.name}</div>
                           </TableCell>
                           <TableCell>
-                            <div className="flex flex-col">
-                              <div className="flex items-center gap-1">
-                                <Mail className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-sm">{customer.email}</span>
+                            <div className="space-y-1">
+                              <div className="flex items-center text-sm text-muted-foreground">
+                                <Mail className="h-3 w-3 mr-1" />
+                                {customer.email}
                               </div>
-                              <div className="flex items-center gap-1">
-                                <Phone className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-sm">{customer.phone}</span>
+                              <div className="flex items-center text-sm text-muted-foreground">
+                                <Phone className="h-3 w-3 mr-1" />
+                                {customer.phone}
                               </div>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={customer.status === "active" ? "default" : "secondary"}>
+                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              customer.status === "active" 
+                                ? "bg-green-100 text-green-700" 
+                                : "bg-gray-100 text-gray-700"
+                            }`}>
                               {customer.status === "active" ? "Aktif" : "Pasif"}
-                            </Badge>
+                            </div>
                           </TableCell>
                           <TableCell>{customer.totalOrders}</TableCell>
-                          <TableCell>{customer.totalSpent}</TableCell>
+                          <TableCell>{customer.totalSpent.toLocaleString("tr-TR")} ₺</TableCell>
+                          <TableCell>{customer.lastOrder}</TableCell>
                           <TableCell>
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3 text-muted-foreground" />
-                              <span>{customer.lastOrder}</span>
+                            <div className="flex flex-wrap gap-1">
+                              {customer.tags.map((tag, index) => (
+                                <span 
+                                  key={index}
+                                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
                             </div>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                  <span className="sr-only">Menüyü aç</span>
+                                <Button variant="ghost" size="icon">
                                   <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
                                 <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  <span>Düzenle</span>
+                                  <UserCog className="h-4 w-4 mr-2" />
+                                  Düzenle
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                  <ShoppingBag className="mr-2 h-4 w-4" />
-                                  <span>Siparişleri Görüntüle</span>
+                                  <ShoppingBag className="h-4 w-4 mr-2" />
+                                  Siparişler
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600">
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  <span>Sil</span>
+                                <DropdownMenuItem>
+                                  <CreditCard className="h-4 w-4 mr-2" />
+                                  Ödemeler
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Mail className="h-4 w-4 mr-2" />
+                                  E-posta Gönder
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
