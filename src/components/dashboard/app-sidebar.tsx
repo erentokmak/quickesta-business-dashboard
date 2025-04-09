@@ -268,6 +268,26 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
       ],
     },
     {
+      title: 'Web Sitesi',
+      url: '/website',
+      icon: Globe,
+      isActive: currentPath.startsWith('/website'),
+      items: [
+        {
+          title: 'Tema Düzenleyici',
+          url: '/theme-editor',
+        },
+        {
+          title: 'Sayfa Yönetimi',
+          url: '/pages',
+        },
+        {
+          title: 'Medya Kütüphanesi',
+          url: '/media',
+        }
+      ],
+    },
+    {
       title: 'Müşteriler',
       url: '/customers',
       icon: Users,
@@ -436,30 +456,6 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
       ],
     },
     {
-      title: 'Web Sitesi',
-      url: '/website',
-      icon: Globe,
-      isActive: currentPath.startsWith('/website'),
-      items: [
-        {
-          title: 'Site Yönetimi',
-          url: '/website/manage',
-        },
-        {
-          title: 'Tema Ayarları',
-          url: '/website/theme',
-        },
-        {
-          title: 'Sayfa Yönetimi',
-          url: '/website/pages',
-        },
-        {
-          title: 'SEO Ayarları',
-          url: '/website/seo',
-        }
-      ],
-    },
-    {
       title: 'Pazarlama',
       url: '/marketing',
       icon: Send,
@@ -490,20 +486,24 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
       isActive: currentPath.startsWith('/settings'),
       items: [
         {
-          title: 'Genel Ayarlar',
-          url: '/settings/general',
+          title: 'Profil',
+          url: '/settings',
         },
         {
-          title: 'Kullanıcı Yönetimi',
-          url: '/settings/users',
+          title: 'Güvenlik',
+          url: '/settings#security',
         },
         {
-          title: 'Bildirim Ayarları',
-          url: '/settings/notifications',
+          title: 'Bildirimler',
+          url: '/settings#notifications',
         },
         {
-          title: 'Entegrasyonlar',
-          url: '/settings/integrations',
+          title: 'Faturalandırma',
+          url: '/settings#billing',
+        },
+        {
+          title: 'Tercihler',
+          url: '/settings#preferences',
         }
       ],
     }
