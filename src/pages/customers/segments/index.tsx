@@ -24,11 +24,10 @@ import {
   Edit,
   Trash,
   Filter,
-  Mail,
-  Phone,
-  MapPin,
-  ShoppingBag,
-  Calendar
+  UserPlus,
+  Calendar,
+  DollarSign,
+  TrendingUp
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -38,80 +37,63 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu"
-import { Badge } from "@/ui/badge"
 
-// Örnek müşteri verisi
-const customers = [
+// Örnek müşteri segmentleri verisi
+const customerSegments = [
   {
     id: "1",
-    name: "Ahmet Yılmaz",
-    email: "ahmet.yilmaz@example.com",
-    phone: "+90 555 123 4567",
-    address: "İstanbul, Türkiye",
-    status: "active",
-    totalOrders: 12,
-    totalSpent: "₺4,500",
-    lastOrder: "2024-03-15",
-    createdAt: "2023-01-10",
+    name: "Yüksek Değerli Müşteriler",
+    description: "Son 12 ayda 10.000 TL üzeri harcama yapan müşteriler",
+    criteria: "Toplam harcama > 10.000 TL",
+    memberCount: 25,
+    revenue: 450000,
+    lastUpdated: "2024-03-20",
   },
   {
     id: "2",
-    name: "Ayşe Demir",
-    email: "ayse.demir@example.com",
-    phone: "+90 555 234 5678",
-    address: "Ankara, Türkiye",
-    status: "active",
-    totalOrders: 8,
-    totalSpent: "₺2,800",
-    lastOrder: "2024-03-10",
-    createdAt: "2023-02-15",
+    name: "Orta Değerli Müşteriler",
+    description: "Son 12 ayda 5.000-10.000 TL arası harcama yapan müşteriler",
+    criteria: "5.000 TL < Toplam harcama < 10.000 TL",
+    memberCount: 42,
+    revenue: 315000,
+    lastUpdated: "2024-03-21",
   },
   {
     id: "3",
-    name: "Mehmet Kaya",
-    email: "mehmet.kaya@example.com",
-    phone: "+90 555 345 6789",
-    address: "İzmir, Türkiye",
-    status: "inactive",
-    totalOrders: 5,
-    totalSpent: "₺1,200",
-    lastOrder: "2024-02-20",
-    createdAt: "2023-03-20",
+    name: "Düşük Değerli Müşteriler",
+    description: "Son 12 ayda 5.000 TL altı harcama yapan müşteriler",
+    criteria: "Toplam harcama < 5.000 TL",
+    memberCount: 18,
+    revenue: 72000,
+    lastUpdated: "2024-03-19",
   },
   {
     id: "4",
-    name: "Fatma Şahin",
-    email: "fatma.sahin@example.com",
-    phone: "+90 555 456 7890",
-    address: "Bursa, Türkiye",
-    status: "active",
-    totalOrders: 15,
-    totalSpent: "₺5,600",
-    lastOrder: "2024-03-18",
-    createdAt: "2023-04-25",
+    name: "Sık Alışveriş Yapanlar",
+    description: "Ayda en az 3 kez alışveriş yapan müşteriler",
+    criteria: "Aylık sipariş sayısı >= 3",
+    memberCount: 35,
+    revenue: 175000,
+    lastUpdated: "2024-03-18",
   },
   {
     id: "5",
-    name: "Ali Öztürk",
-    email: "ali.ozturk@example.com",
-    phone: "+90 555 567 8901",
-    address: "Antalya, Türkiye",
-    status: "inactive",
-    totalOrders: 3,
-    totalSpent: "₺900",
-    lastOrder: "2024-01-30",
-    createdAt: "2023-05-30",
+    name: "Sezonsal Alışverişçiler",
+    description: "Belirli sezonlarda yoğun alışveriş yapan müşteriler",
+    criteria: "Sezonluk alışveriş paterni",
+    memberCount: 12,
+    revenue: 96000,
+    lastUpdated: "2024-03-17",
   },
 ]
 
-export default function CustomersPage() {
+export default function CustomerSegmentsPage() {
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Arama sorgusuna göre müşterileri filtrele
-  const filteredCustomers = customers.filter(customer => 
-    customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    customer.phone.includes(searchQuery)
+  // Arama sorgusuna göre müşteri segmentlerini filtrele
+  const filteredSegments = customerSegments.filter(segment => 
+    segment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    segment.description.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
@@ -122,65 +104,53 @@ export default function CustomersPage() {
           <div className="border-b">
             <div className="flex items-center justify-between p-4">
               <div className="space-y-1">
-                <h2 className="text-2xl font-semibold tracking-tight">Müşteriler</h2>
+                <h2 className="text-2xl font-semibold tracking-tight">Müşteri Segmentleri</h2>
                 <p className="text-sm text-muted-foreground">
-                  Müşterilerinizi görüntüleyin ve yönetin
+                  Müşteri segmentlerinizi yönetin ve analiz edin
                 </p>
               </div>
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
-                Yeni Müşteri Ekle
+                Yeni Segment Oluştur
               </Button>
             </div>
           </div>
           <ScrollArea className="flex-1">
             <div className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Toplam Segment</CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">5</div>
+                    <p className="text-xs text-muted-foreground">
+                      Aktif müşteri segmenti
+                    </p>
+                  </CardContent>
+                </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Toplam Müşteri</CardTitle>
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">5</div>
+                    <div className="text-2xl font-bold">132</div>
                     <p className="text-xs text-muted-foreground">
-                      Kayıtlı müşteri sayısı
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Aktif Müşteriler</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">3</div>
-                    <p className="text-xs text-muted-foreground">
-                      Son 30 günde alışveriş yapan
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Toplam Sipariş</CardTitle>
-                    <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">43</div>
-                    <p className="text-xs text-muted-foreground">
-                      Tüm müşterilerin toplam siparişi
+                      Tüm segmentlerdeki toplam müşteri
                     </p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Toplam Gelir</CardTitle>
-                    <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">₺15,000</div>
+                    <div className="text-2xl font-bold">1.108.000 ₺</div>
                     <p className="text-xs text-muted-foreground">
-                      Tüm müşterilerden elde edilen gelir
+                      Tüm segmentlerden gelen toplam gelir
                     </p>
                   </CardContent>
                 </Card>
@@ -190,16 +160,16 @@ export default function CustomersPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle>Müşteri Listesi</CardTitle>
+                      <CardTitle>Müşteri Segmentleri</CardTitle>
                       <CardDescription>
-                        Tüm müşterilerinizi görüntüleyin ve yönetin
+                        Tüm müşteri segmentlerinizi görüntüleyin ve yönetin
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="relative">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                          placeholder="Müşteri ara..."
+                          placeholder="Segment ara..."
                           className="pl-8 w-[250px]"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
@@ -216,49 +186,32 @@ export default function CustomersPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Müşteri</TableHead>
-                        <TableHead>İletişim</TableHead>
-                        <TableHead>Durum</TableHead>
-                        <TableHead>Sipariş Sayısı</TableHead>
-                        <TableHead>Toplam Harcama</TableHead>
-                        <TableHead>Son Sipariş</TableHead>
+                        <TableHead>Segment Adı</TableHead>
+                        <TableHead>Açıklama</TableHead>
+                        <TableHead>Kriterler</TableHead>
+                        <TableHead>Üye Sayısı</TableHead>
+                        <TableHead>Gelir</TableHead>
+                        <TableHead>Son Güncelleme</TableHead>
                         <TableHead className="text-right">İşlemler</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredCustomers.map((customer) => (
-                        <TableRow key={customer.id}>
+                      {filteredSegments.map((segment) => (
+                        <TableRow key={segment.id}>
+                          <TableCell className="font-medium">{segment.name}</TableCell>
+                          <TableCell>{segment.description}</TableCell>
+                          <TableCell>{segment.criteria}</TableCell>
+                          <TableCell>{segment.memberCount}</TableCell>
                           <TableCell>
-                            <div className="flex flex-col">
-                              <span className="font-medium">{customer.name}</span>
-                              <span className="text-sm text-muted-foreground">
-                                {customer.address}
-                              </span>
+                            <div className="flex items-center gap-1">
+                              <DollarSign className="h-3 w-3 text-muted-foreground" />
+                              <span>{segment.revenue.toLocaleString()} ₺</span>
                             </div>
                           </TableCell>
-                          <TableCell>
-                            <div className="flex flex-col">
-                              <div className="flex items-center gap-1">
-                                <Mail className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-sm">{customer.email}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Phone className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-sm">{customer.phone}</span>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={customer.status === "active" ? "default" : "secondary"}>
-                              {customer.status === "active" ? "Aktif" : "Pasif"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{customer.totalOrders}</TableCell>
-                          <TableCell>{customer.totalSpent}</TableCell>
                           <TableCell>
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3 text-muted-foreground" />
-                              <span>{customer.lastOrder}</span>
+                              <span>{segment.lastUpdated}</span>
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
@@ -272,12 +225,16 @@ export default function CustomersPage() {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
                                 <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  <span>Düzenle</span>
+                                  <Users className="mr-2 h-4 w-4" />
+                                  <span>Üyeleri Görüntüle</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                  <ShoppingBag className="mr-2 h-4 w-4" />
-                                  <span>Siparişleri Görüntüle</span>
+                                  <TrendingUp className="mr-2 h-4 w-4" />
+                                  <span>Analiz Et</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  <span>Düzenle</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem className="text-red-600">
