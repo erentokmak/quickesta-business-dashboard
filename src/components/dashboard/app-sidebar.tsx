@@ -260,6 +260,10 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
         {
           title: 'İstatistikler',
           url: '/analytics',
+        },
+        {
+          title: 'Web Sitelerim',
+          url: '/websites',
         }
       ],
     },
