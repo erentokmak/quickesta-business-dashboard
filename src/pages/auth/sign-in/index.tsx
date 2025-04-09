@@ -150,12 +150,6 @@ export default function SignIn() {
     }
   }
 
-  const handleSSOSignIn = () => {
-    // Redirect to the main Quickesta Visa site for authentication
-    const redirectUrl = encodeURIComponent(`${process.env.NEXT_PUBLIC_SITE_URL}/auth/sso`)
-    window.location.href = `https://visa.quickesta.com/auth/sso?redirect=${redirectUrl}`
-  }
-
   const renderForm = () => (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid gap-2">
@@ -202,17 +196,6 @@ export default function SignIn() {
               ? 'Hesap Ekle'
               : 'Giriş Yap'}
         </Button>
-
-        {!isAddMode && (
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleSSOSignIn}
-          >
-            Quickesta Visa ile Giriş Yap
-          </Button>
-        )}
 
         {isAddMode && (
           <Button
