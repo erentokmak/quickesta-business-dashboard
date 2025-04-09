@@ -28,7 +28,7 @@ import {
   FileText as FileTextIcon,
   Send,
 } from 'lucide-react'
-import { useSession } from 'next-auth/react'  
+import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 
 import { NavMain } from '@/components/dashboard/nav-main'
@@ -51,126 +51,66 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
   },
   teams: [
     {
-      name: 'Visa Dashboard',
-      logo: Plane,
+      name: 'Quickesta Business',
+      logo: Store,
       plan: 'Enterprise',
     },
   ],
   navMain: [
     {
-      title: 'Genel Bakış',
+      title: 'Genel',
       url: '/dashboard',
-      icon: BarChart3,
+      icon: Home,
       isActive: currentPath === '/dashboard',
       items: [
         {
-          title: 'Anasayfa',
+          title: 'Ana Sayfa',
           url: '/dashboard',
         },
         {
-          title: 'Profil Ayarları',
-          url: '/settings/profile',
-        },
+          title: 'İstatistikler',
+          url: '/dashboard/analytics',
+        }
       ],
     },
     {
-      title: 'İstatistikler',
-      url: '/statistics',
-      icon: BarChart3,
-      isActive: currentPath.startsWith('/statistics'),
-      items: [
-        {
-          title: 'Onay/Red Oranları',
-          url: '/statistics/approval-rates',
-        },
-        {
-          title: 'Tercih Edilen Ülkeler',
-          url: '/statistics/popular-countries',
-        },
-        {
-          title: 'Başvuru Sayıları',
-          url: '/statistics/application-counts',
-        },
-      ],
-    },
-    {
-      title: 'Başvurular',
-      url: '/applications',
-      icon: FileCheck,
-      isActive: currentPath.startsWith('/applications'),
-      items: [
-        {
-          title: 'Tüm Başvurular',
-          url: '/applications',
-        },
-        {
-          title: 'Son Randevular',
-          url: '/applications/recent-appointments',
-        },
-        {
-          title: 'Yeni Başvuru',
-          url: '/applications/new',
-        },
-      ],
-    },
-    {
-      title: 'Ülkeler',
-      url: '/countries',
-      icon: Globe,
-      isActive: currentPath.startsWith('/countries'),
-      items: [
-        {
-          title: 'Ülke Listesi',
-          url: '/countries',
-        },
-      ],
-    },
-    {
-      title: 'Ödemeler',
-      url: '/payments',
-      icon: CreditCardIcon,
-      isActive: currentPath.startsWith('/payments'),
-      items: [
-        {
-          title: 'Ödeme Durumu',
-          url: '/payments/status',
-        },
-        {
-          title: 'Ödeme Geçmişi',
-          url: '/payments/history',
-        },
-      ],
-    },
-    {
-      title: 'Müşteriler',
-      url: '/customers',
-      icon: Users,
-      isActive: currentPath.startsWith('/customers'),
-      items: [
-        {
-          title: 'Müşteri Listesi',
-          url: '/customers',
-        },
-        {
-          title: 'Yeni Müşteri',
-          url: '/customers/new',
-        },
-        {
-          title: 'Bilgilendirme Formları',
-          url: '/customers/forms',
-        },
-      ],
-    },
-    {
-      title: 'Şirketler',
-      url: '/companies',
+      title: 'Yönetim',
+      url: '/management',
       icon: Building2,
-      isActive: currentPath.startsWith('/companies'),
+      isActive: currentPath.startsWith('/management'),
       items: [
         {
-          title: 'Şirket Listesi',
-          url: '/companies',
+          title: 'Müşteriler',
+          url: '/dashboard/customers',
         },
+        {
+          title: 'Ürünler',
+          url: '/dashboard/products',
+        },
+        {
+          title: 'Siparişler',
+          url: '/dashboard/orders',
+        },
+        {
+          title: 'Faturalar',
+          url: '/dashboard/invoices',
+        }
+      ],
+    },
+    {
+      title: 'Finans',
+      url: '/finance',
+      icon: CreditCard,
+      isActive: currentPath.startsWith('/finance'),
+      items: [
+        {
+          title: 'Ödemeler',
+          url: '/dashboard/payments',
+        },
+        {
+          title: 'Raporlar',
+          url: '/dashboard/reports',
+        }
       ],
     },
     {
@@ -180,15 +120,19 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
       isActive: currentPath.startsWith('/settings'),
       items: [
         {
-          title: 'Profil Ayarları',
-          url: '/settings/profile',
+          title: 'Şirket',
+          url: '/dashboard/company',
         },
         {
-          title: 'Güvenlik',
-          url: '/settings/security',
+          title: 'Takvim',
+          url: '/dashboard/calendar',
         },
+        {
+          title: 'Ayarlar',
+          url: '/dashboard/settings',
+        }
       ],
-    },
+    }
   ],
 })
 
@@ -215,3 +159,4 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
+
