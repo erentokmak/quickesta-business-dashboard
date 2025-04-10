@@ -101,13 +101,13 @@ export function TeamSwitcher({
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2" asChild>
-              <Link href="/settings/profile">
+              <Link href="/dashboard/settings/profile">
                 <User className="size-4" />
                 <span>Profil Ayarları</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="gap-2 p-2" asChild>
-              <Link href="/settings">
+              <Link href="/dashboard/settings">
                 <Settings className="size-4" />
                 <span>Genel Ayarlar</span>
               </Link>

@@ -249,261 +249,261 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
   navMain: [
     {
       title: 'Genel',
-      url: '/',
+      url: '/dashboard',
       icon: Home,
-      isActive: currentPath === '/',
+      isActive: currentPath === '/dashboard',
       items: [
         {
           title: 'Ana Sayfa',
-          url: '/',
+          url: '/dashboard',
         },
         {
           title: 'İstatistikler',
-          url: '/analytics',
+          url: '/dashboard/analytics',
         },
         {
           title: 'Web Sitelerim',
-          url: '/websites',
+          url: '/dashboard/websites',
         }
       ],
     },
     {
       title: 'Web Sitesi',
-      url: '/website',
+      url: '/dashboard/website',
       icon: Globe,
-      isActive: currentPath.startsWith('/website'),
+      isActive: currentPath.startsWith('/dashboard/website'),
       items: [
         {
           title: 'Tema Düzenleyici',
-          url: '/theme-editor',
+          url: '/dashboard/theme-editor',
         },
         {
           title: 'Sayfa Yönetimi',
-          url: '/pages',
+          url: '/dashboard/pages',
         },
         {
           title: 'Medya Kütüphanesi',
-          url: '/media',
+          url: '/dashboard/media',
         }
       ],
     },
     {
       title: 'Müşteriler',
-      url: '/customers',
+      url: '/dashboard/customers',
       icon: Users,
-      isActive: currentPath.startsWith('/customers'),
+      isActive: currentPath.startsWith('/dashboard/customers'),
       items: [
         {
           title: 'Müşteri Listesi',
-          url: '/customers',
+          url: '/dashboard/customers',
         },
         {
           title: 'Müşteri Grupları',
-          url: '/customers/groups',
+          url: '/dashboard/customers/groups',
         },
         {
           title: 'Müşteri Segmentleri',
-          url: '/customers/segments',
+          url: '/dashboard/customers/segments',
         },
         {
           title: 'Müşteri Davranışları',
-          url: '/customers/behaviors',
+          url: '/dashboard/customers/behaviors',
         }
       ],
     },
     {
       title: 'Siparişler',
-      url: '/orders',
+      url: '/dashboard/orders',
       icon: ShoppingCart,
-      isActive: currentPath.startsWith('/orders'),
+      isActive: currentPath.startsWith('/dashboard/orders'),
       items: [
         {
           title: 'Tüm Siparişler',
-          url: '/orders',
+          url: '/dashboard/orders',
         },
         {
           title: 'Bekleyen Siparişler',
-          url: '/orders/pending',
+          url: '/dashboard/orders/pending',
         },
         {
           title: 'Tamamlanan Siparişler',
-          url: '/orders/completed',
+          url: '/dashboard/orders/completed',
         },
         {
           title: 'İptal Edilen Siparişler',
-          url: '/orders/cancelled',
+          url: '/dashboard/orders/cancelled',
         }
       ],
     },
     {
       title: 'Ürünler',
-      url: '/products',
+      url: '/dashboard/products',
       icon: Package,
-      isActive: currentPath.startsWith('/products'),
+      isActive: currentPath.startsWith('/dashboard/products'),
       items: [
         {
           title: 'Ürün Listesi',
-          url: '/products',
+          url: '/dashboard/products',
         },
         {
           title: 'Kategoriler',
-          url: '/products/categories',
+          url: '/dashboard/products/categories',
         },
         {
           title: 'Stok Durumu',
-          url: '/products/inventory',
+          url: '/dashboard/products/inventory',
         },
         {
           title: 'Ürün Değerlendirmeleri',
-          url: '/products/reviews',
+          url: '/dashboard/products/reviews',
         }
       ],
     },
     {
       title: 'Finans',
-      url: '/finance',
+      url: '/dashboard/finance',
       icon: CreditCard,
-      isActive: currentPath.startsWith('/finance'),
+      isActive: currentPath.startsWith('/dashboard/finance'),
       items: [
         {
           title: 'Gelir Raporu',
-          url: '/finance/income',
+          url: '/dashboard/finance/income',
         },
         {
           title: 'Gider Raporu',
-          url: '/finance/expenses',
+          url: '/dashboard/finance/expenses',
         },
         {
           title: 'Kâr/Zarar Analizi',
-          url: '/finance/profit-loss',
+          url: '/dashboard/finance/profit-loss',
         },
         {
           title: 'Vergi Raporu',
-          url: '/finance/tax',
+          url: '/dashboard/finance/tax',
         }
       ],
     },
     {
       title: 'Analitik',
-      url: '/analytics',
+      url: '/dashboard/analytics',
       icon: BarChart,
-      isActive: currentPath.startsWith('/analytics'),
+      isActive: currentPath.startsWith('/dashboard/analytics'),
       items: [
         {
           title: 'Satış Analizi',
-          url: '/analytics/sales',
+          url: '/dashboard/analytics/sales',
         },
         {
           title: 'Müşteri Analizi',
-          url: '/analytics/customers',
+          url: '/dashboard/analytics/customers',
         },
         {
           title: 'Ürün Analizi',
-          url: '/analytics/products',
+          url: '/dashboard/analytics/products',
         },
         {
           title: 'Pazarlama Analizi',
-          url: '/analytics/marketing',
+          url: '/dashboard/analytics/marketing',
         }
       ],
     },
     {
       title: 'Raporlar',
-      url: '/reports',
+      url: '/dashboard/reports',
       icon: FileText,
-      isActive: currentPath.startsWith('/reports'),
+      isActive: currentPath.startsWith('/dashboard/reports'),
       items: [
         {
           title: 'Satış Raporları',
-          url: '/reports/sales',
+          url: '/dashboard/reports/sales',
         },
         {
           title: 'Müşteri Raporları',
-          url: '/reports/customers',
+          url: '/dashboard/reports/customers',
         },
         {
           title: 'Ürün Raporları',
-          url: '/reports/products',
+          url: '/dashboard/reports/products',
         },
         {
           title: 'Finansal Raporlar',
-          url: '/reports/financial',
+          url: '/dashboard/reports/financial',
         }
       ],
     },
     {
       title: 'İşletme',
-      url: '/business',
+      url: '/dashboard/business',
       icon: Building2,
-      isActive: currentPath.startsWith('/business'),
+      isActive: currentPath.startsWith('/dashboard/business'),
       items: [
         {
           title: 'İşletme Profili',
-          url: '/business/profile',
+          url: '/dashboard/business/profile',
         },
         {
           title: 'İşletme Ayarları',
-          url: '/business/settings',
+          url: '/dashboard/business/settings',
         },
         {
           title: 'Çalışanlar',
-          url: '/business/employees',
+          url: '/dashboard/business/employees',
         },
         {
           title: 'Şubeler',
-          url: '/business/branches',
+          url: '/dashboard/business/branches',
         }
       ],
     },
     {
       title: 'Pazarlama',
-      url: '/marketing',
+      url: '/dashboard/marketing',
       icon: Send,
-      isActive: currentPath.startsWith('/marketing'),
+      isActive: currentPath.startsWith('/dashboard/marketing'),
       items: [
         {
           title: 'Kampanyalar',
-          url: '/marketing/campaigns',
+          url: '/dashboard/marketing/campaigns',
         },
         {
           title: 'E-posta Pazarlama',
-          url: '/marketing/email',
+          url: '/dashboard/marketing/email',
         },
         {
           title: 'SMS Pazarlama',
-          url: '/marketing/sms',
+          url: '/dashboard/marketing/sms',
         },
         {
           title: 'Sosyal Medya',
-          url: '/marketing/social',
+          url: '/dashboard/marketing/social',
         }
       ],
     },
     {
       title: 'Ayarlar',
-      url: '/settings',
+      url: '/dashboard/settings',
       icon: Settings2,
-      isActive: currentPath.startsWith('/settings'),
+      isActive: currentPath.startsWith('/dashboard/settings'),
       items: [
         {
           title: 'Profil',
-          url: '/settings',
+          url: '/dashboard/settings',
         },
         {
           title: 'Güvenlik',
-          url: '/settings#security',
+          url: '/dashboard/settings#security',
         },
         {
           title: 'Bildirimler',
-          url: '/settings#notifications',
+          url: '/dashboard/settings#notifications',
         },
         {
           title: 'Faturalandırma',
-          url: '/settings#billing',
+          url: '/dashboard/settings#billing',
         },
         {
           title: 'Tercihler',
-          url: '/settings#preferences',
+          url: '/dashboard/settings#preferences',
         }
       ],
     }
