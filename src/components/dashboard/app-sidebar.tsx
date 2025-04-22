@@ -217,6 +217,7 @@ import {
   HelpCircle as SupportHelpQuestionIcon20,
   LogOut as LogoutSignButtonIcon20,
   Plus as AddCreateNewIcon20,
+  Menu,
 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
@@ -230,7 +231,10 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarTrigger,
+  useSidebar,
 } from '@/ui/sidebar'
+import { Button } from '@/ui/button'
 
 // This is the actual data for Quickesta Business Dashboard
 const getDefaultData = (sessionUser: any, currentPath: string) => ({
@@ -513,24 +517,35 @@ const getDefaultData = (sessionUser: any, currentPath: string) => ({
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
   const pathname = usePathname()
+  const { isMobile } = useSidebar()
   const data = React.useMemo(
     () => getDefaultData(session?.user, pathname || ''),
     [session?.user, pathname],
   )
 
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+    <>
+      {/* Mobile Navigation Trigger Button */}
+      <div className="fixed left-0 top-0 z-50 flex h-14 w-full items-center border-b bg-background px-4 md:hidden">
+        <Button variant="ghost" size="icon" className="mr-2" asChild>
+          <SidebarTrigger />
+        </Button>
+        <span className="font-semibold">Quickesta Business</span>
+      </div>
+
+      <Sidebar collapsible="icon" {...props}>
+        <SidebarHeader>
+          <TeamSwitcher teams={data.teams} />
+        </SidebarHeader>
+        <SidebarContent>
+          <NavMain items={data.navMain} />
+        </SidebarContent>
+        <SidebarFooter>
+          <NavUser />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+    </>
   )
 }
 
