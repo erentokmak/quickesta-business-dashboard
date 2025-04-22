@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/router"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card"
+import { useEffect } from "react"
+import { useQuery } from "@apollo/client"
+import { format } from "date-fns"
+import { tr } from "date-fns/locale"
+import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card"
 import { ScrollArea } from "@/ui/scroll-area"
-import { Button } from "@/ui/button"
-import { Input } from "@/ui/input"
 import { SidebarProvider, SidebarInset } from "@/ui/sidebar"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import {
@@ -16,100 +16,139 @@ import {
     TableHeader,
     TableRow,
 } from "@/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/ui/dropdown-menu"
-import {
-    Search,
-    MoreHorizontal,
-    Plus,
-    Users,
-    Tag,
-    Activity,
-    UserPlus,
-    UserCog,
-    UserCheck,
-    UserX,
-    Mail,
-    Phone,
-    MapPin,
-    CreditCard,
-    ShoppingBag,
-    Calendar,
-    ChevronRight
-} from "lucide-react"
+import { GET_DAILY_APPOINTMENTS, GET_BUSINESS_BY_OWNER } from "@/graphql/queries/appointment"
+import { useSession } from "next-auth/react"
+import { Calendar, Clock, User } from "lucide-react"
 
-// Örnek müşteri verileri
-const customers = [
-    {
-        id: "1",
-        name: "Ahmet Yılmaz",
-        email: "ahmet@example.com",
-        phone: "+90 555 123 4567",
-        status: "active",
-        totalOrders: 12,
-        totalSpent: 2500,
-        lastOrder: "2024-02-15",
-        tags: ["VIP", "Yeni Müşteri"],
-    },
-    {
-        id: "2",
-        name: "Ayşe Demir",
-        email: "ayse@example.com",
-        phone: "+90 555 234 5678",
-        status: "active",
-        totalOrders: 8,
-        totalSpent: 1800,
-        lastOrder: "2024-02-10",
-        tags: ["Düzenli Müşteri"],
-    },
-    {
-        id: "3",
-        name: "Mehmet Kaya",
-        email: "mehmet@example.com",
-        phone: "+90 555 345 6789",
-        status: "inactive",
-        totalOrders: 3,
-        totalSpent: 450,
-        lastOrder: "2024-01-20",
-        tags: ["Potansiyel"],
-    },
-    {
-        id: "4",
-        name: "Zeynep Şahin",
-        email: "zeynep@example.com",
-        phone: "+90 555 456 7890",
-        status: "active",
-        totalOrders: 15,
-        totalSpent: 3200,
-        lastOrder: "2024-02-18",
-        tags: ["VIP", "Sadık Müşteri"],
-    },
-    {
-        id: "5",
-        name: "Ali Öztürk",
-        email: "ali@example.com",
-        phone: "+90 555 567 8901",
-        status: "active",
-        totalOrders: 6,
-        totalSpent: 1200,
-        lastOrder: "2024-02-05",
-        tags: ["Yeni Müşteri"],
-    },
-]
+interface SessionUser {
+    id: string // UUID string olarak kalabilir, GraphQL otomatik dönüşüm yapacak
+    email: string
+    name: string
+    surname: string
+    phoneNumber: string
+    username: string
+    accessToken: string
+    refreshToken: string
+    expiresIn: number
+    roles: string[]
+    permissions: string[]
+}
 
-export default function CustomersPage() {
-    const router = useRouter()
-    const [searchQuery, setSearchQuery] = useState("")
+export default function AppointmentsPage() {
+    const { data: session, status } = useSession()
+    const userId = (session?.user as SessionUser)?.id
 
-    // Müşterileri filtrele
-    const filteredCustomers = customers.filter(customer =>
-        customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.phone.includes(searchQuery)
+    // Debug için session bilgilerini kontrol edelim
+    useEffect(() => {
+        console.log('Session:', session)
+        console.log('User ID:', userId)
+    }, [session, userId])
+
+    const today = new Date()
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    // Önce business'ı çekelim
+    const { data: businessData, error: businessError } = useQuery(GET_BUSINESS_BY_OWNER, {
+        variables: {
+            owner_id: userId
+        },
+        skip: !userId
+    })
+
+    // Business error'unu kontrol edelim
+    useEffect(() => {
+        if (businessError) {
+            console.error('Business Error:', businessError)
+        }
+    }, [businessError])
+
+    const businessId = businessData?.businesses[0]?.id
+
+    // Sonra appointments'ları çekelim
+    const { data, loading, error } = useQuery(GET_DAILY_APPOINTMENTS, {
+        variables: {
+            business_id: businessId,
+            start_date: format(today, 'yyyy-MM-dd'),
+            end_date: format(tomorrow, 'yyyy-MM-dd')
+        },
+        skip: !businessId
+    })
+
+    // Debug için loglar
+    useEffect(() => {
+        console.log('Business Data:', businessData)
+        console.log('Business ID:', businessId)
+        console.log('Appointments:', data)
+        if (error) {
+            console.error('Appointments Error:', error)
+        }
+    }, [businessData, businessId, data, error])
+
+    const todayAppointments = data?.appointments.filter(
+        (apt: any) => apt.appointment_date === format(today, 'yyyy-MM-dd')
+    ) || []
+
+    const tomorrowAppointments = data?.appointments.filter(
+        (apt: any) => apt.appointment_date === format(tomorrow, 'yyyy-MM-dd')
+    ) || []
+
+    const AppointmentTable = ({ appointments }: { appointments: any[] }) => (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Saat</TableHead>
+                    <TableHead>Müşteri</TableHead>
+                    <TableHead>Hizmet</TableHead>
+                    <TableHead>Personel</TableHead>
+                    <TableHead>Ücret</TableHead>
+                    <TableHead>Durum</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {appointments.map((appointment) => (
+                    <TableRow key={appointment.id}>
+                        <TableCell>
+                            <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4" />
+                                {format(new Date(`2000-01-01T${appointment.start_time}`), 'HH:mm')}
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div className="flex items-center gap-2">
+                                <User className="h-4 w-4" />
+                                <div>
+                                    <div className="font-medium">{appointment.customer.full_name}</div>
+                                    <div className="text-sm text-muted-foreground">{appointment.customer.phone}</div>
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell>{appointment.service.name}</TableCell>
+                        <TableCell>{appointment.team_member.full_name}</TableCell>
+                        <TableCell>{appointment.price_charged.toLocaleString('tr-TR')} ₺</TableCell>
+                        <TableCell>
+                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${appointment.status === "scheduled"
+                                ? "bg-blue-100 text-blue-700"
+                                : appointment.status === "completed"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-100 text-gray-700"
+                                }`}>
+                                {appointment.status === "scheduled" ? "Planlandı"
+                                    : appointment.status === "completed" ? "Tamamlandı"
+                                        : "İptal Edildi"}
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                ))}
+                {appointments.length === 0 && (
+                    <TableRow>
+                        <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
+                            Randevu bulunmamaktadır
+                        </TableCell>
+                    </TableRow>
+                )}
+            </TableBody>
+        </Table>
     )
 
     return (
@@ -118,90 +157,38 @@ export default function CustomersPage() {
             <SidebarInset className="w-full">
                 <div className="flex flex-col h-full">
                     <div className="border-b">
-                        <div className="flex items-center justify-between p-4">
+                        <div className="flex items-center p-4">
                             <div className="space-y-1">
                                 <h2 className="text-2xl font-semibold tracking-tight">Randevular</h2>
                                 <p className="text-sm text-muted-foreground">
-                                    Randevu listesi ve yönetimi
+                                    Bugün ve yarınki randevular
                                 </p>
                             </div>
-
                         </div>
                     </div>
                     <ScrollArea className="flex-1">
-                        <div className="p-4">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="relative flex-1">
-                                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Müşteri ara..."
-                                        className="pl-8"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                    />
-                                </div>
-                            </div>
+                        <div className="p-4 space-y-4">
                             <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Calendar className="h-5 w-5" />
+                                        Bugünün Randevuları ({format(today, 'd MMMM yyyy', { locale: tr })})
+                                    </CardTitle>
+                                </CardHeader>
                                 <CardContent className="p-0">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Müşteri</TableHead>
-                                                <TableHead>İletişim</TableHead>
-                                                <TableHead>Durum</TableHead>
-                                                <TableHead>Sipariş</TableHead>
-                                                <TableHead>Toplam Harcama</TableHead>
-                                                <TableHead>Son Sipariş</TableHead>
-                                                <TableHead>Etiketler</TableHead>
-                                                <TableHead className="w-[50px]"></TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {filteredCustomers.map((customer) => (
-                                                <TableRow key={customer.id}>
-                                                    <TableCell>
-                                                        <div className="font-medium">{customer.name}</div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center text-sm text-muted-foreground">
-                                                                <Mail className="h-3 w-3 mr-1" />
-                                                                {customer.email}
-                                                            </div>
-                                                            <div className="flex items-center text-sm text-muted-foreground">
-                                                                <Phone className="h-3 w-3 mr-1" />
-                                                                {customer.phone}
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${customer.status === "active"
-                                                                ? "bg-green-100 text-green-700"
-                                                                : "bg-gray-100 text-gray-700"
-                                                            }`}>
-                                                            {customer.status === "active" ? "Aktif" : "Pasif"}
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>{customer.totalOrders}</TableCell>
-                                                    <TableCell>{customer.totalSpent.toLocaleString("tr-TR")} ₺</TableCell>
-                                                    <TableCell>{customer.lastOrder}</TableCell>
-                                                    <TableCell>
-                                                        <div className="flex flex-wrap gap-1">
-                                                            {customer.tags.map((tag, index) => (
-                                                                <span
-                                                                    key={index}
-                                                                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
-                                                                >
-                                                                    {tag}
-                                                                </span>
-                                                            ))}
-                                                        </div>
-                                                    </TableCell>
+                                    <AppointmentTable appointments={todayAppointments} />
+                                </CardContent>
+                            </Card>
 
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Calendar className="h-5 w-5" />
+                                        Yarının Randevuları ({format(tomorrow, 'd MMMM yyyy', { locale: tr })})
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    <AppointmentTable appointments={tomorrowAppointments} />
                                 </CardContent>
                             </Card>
                         </div>
