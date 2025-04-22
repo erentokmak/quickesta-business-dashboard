@@ -11,7 +11,9 @@ import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import {
     Table,
     TableBody,
+    TableCaption,
     TableCell,
+    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
@@ -32,6 +34,84 @@ interface SessionUser {
     expiresIn: number
     roles: string[]
     permissions: string[]
+}
+
+const AppointmentTable = ({ appointments, date }: { appointments: any[], date: Date }) => {
+    // Toplam randevu sayısı
+    const totalAppointments = appointments.length
+
+    // Toplam gelir
+    const totalRevenue = appointments.reduce((sum, apt) => sum + apt.price_charged, 0)
+
+    return (
+        <Table>
+            <TableCaption>
+                {format(date, 'd MMMM yyyy', { locale: tr })} tarihli randevular
+            </TableCaption>
+            <TableHeader>
+                <TableRow>
+                    <TableHead className="w-[100px]">Saat</TableHead>
+                    <TableHead>Müşteri</TableHead>
+                    <TableHead>Hizmet</TableHead>
+                    <TableHead>Personel</TableHead>
+                    <TableHead className="text-right">Ücret</TableHead>
+                    <TableHead>Durum</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {appointments.map((appointment) => (
+                    <TableRow key={appointment.id}>
+                        <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4" />
+                                {format(new Date(`2000-01-01T${appointment.start_time}`), 'HH:mm')}
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div className="flex items-center gap-2">
+                                <User className="h-4 w-4" />
+                                <div>
+                                    <div className="font-medium">{appointment.customer.full_name}</div>
+                                    <div className="text-sm text-muted-foreground">{appointment.customer.phone}</div>
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell>{appointment.service.name}</TableCell>
+                        <TableCell>{appointment.team_member.full_name}</TableCell>
+                        <TableCell className="text-right">{appointment.price_charged.toLocaleString('tr-TR')} ₺</TableCell>
+                        <TableCell>
+                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${appointment.status === "scheduled"
+                                ? "bg-blue-100 text-blue-700"
+                                : appointment.status === "completed"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-100 text-gray-700"
+                                }`}>
+                                {appointment.status === "scheduled" ? "Planlandı"
+                                    : appointment.status === "completed" ? "Tamamlandı"
+                                        : "İptal Edildi"}
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                ))}
+                {appointments.length === 0 && (
+                    <TableRow>
+                        <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
+                            Randevu bulunmamaktadır
+                        </TableCell>
+                    </TableRow>
+                )}
+            </TableBody>
+            {appointments.length > 0 && (
+                <TableFooter>
+                    <TableRow>
+                        <TableCell colSpan={4}>Toplam</TableCell>
+                        <TableCell className="text-right font-medium">{totalRevenue.toLocaleString('tr-TR')} ₺</TableCell>
+                        <TableCell>{totalAppointments} Randevu</TableCell>
+                    </TableRow>
+                </TableFooter>
+            )}
+        </Table>
+    )
 }
 
 export default function AppointmentsPage() {
@@ -93,70 +173,12 @@ export default function AppointmentsPage() {
         (apt: any) => apt.appointment_date === format(tomorrow, 'yyyy-MM-dd')
     ) || []
 
-    const AppointmentTable = ({ appointments }: { appointments: any[] }) => (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Saat</TableHead>
-                    <TableHead>Müşteri</TableHead>
-                    <TableHead>Hizmet</TableHead>
-                    <TableHead>Personel</TableHead>
-                    <TableHead>Ücret</TableHead>
-                    <TableHead>Durum</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {appointments.map((appointment) => (
-                    <TableRow key={appointment.id}>
-                        <TableCell>
-                            <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4" />
-                                {format(new Date(`2000-01-01T${appointment.start_time}`), 'HH:mm')}
-                            </div>
-                        </TableCell>
-                        <TableCell>
-                            <div className="flex items-center gap-2">
-                                <User className="h-4 w-4" />
-                                <div>
-                                    <div className="font-medium">{appointment.customer.full_name}</div>
-                                    <div className="text-sm text-muted-foreground">{appointment.customer.phone}</div>
-                                </div>
-                            </div>
-                        </TableCell>
-                        <TableCell>{appointment.service.name}</TableCell>
-                        <TableCell>{appointment.team_member.full_name}</TableCell>
-                        <TableCell>{appointment.price_charged.toLocaleString('tr-TR')} ₺</TableCell>
-                        <TableCell>
-                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${appointment.status === "scheduled"
-                                ? "bg-blue-100 text-blue-700"
-                                : appointment.status === "completed"
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-gray-100 text-gray-700"
-                                }`}>
-                                {appointment.status === "scheduled" ? "Planlandı"
-                                    : appointment.status === "completed" ? "Tamamlandı"
-                                        : "İptal Edildi"}
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                ))}
-                {appointments.length === 0 && (
-                    <TableRow>
-                        <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
-                            Randevu bulunmamaktadır
-                        </TableCell>
-                    </TableRow>
-                )}
-            </TableBody>
-        </Table>
-    )
-
     return (
         <SidebarProvider>
             <AppSidebar />
             <SidebarInset className="w-full">
                 <div className="flex flex-col h-full">
-                    <div className="border-b">
+                    <div className="border-b mt-3">
                         <div className="flex items-center p-4">
                             <div className="space-y-1">
                                 <h2 className="text-2xl font-semibold tracking-tight">Randevular</h2>
@@ -166,33 +188,31 @@ export default function AppointmentsPage() {
                             </div>
                         </div>
                     </div>
-                    <ScrollArea className="flex-1">
-                        <div className="p-4 space-y-4">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Calendar className="h-5 w-5" />
-                                        Bugünün Randevuları ({format(today, 'd MMMM yyyy', { locale: tr })})
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-0">
-                                    <AppointmentTable appointments={todayAppointments} />
-                                </CardContent>
-                            </Card>
+                    <div className="p-4 space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Calendar className="h-5 w-5" />
+                                    Bugünün Randevuları
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <AppointmentTable appointments={todayAppointments} date={today} />
+                            </CardContent>
+                        </Card>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Calendar className="h-5 w-5" />
-                                        Yarının Randevuları ({format(tomorrow, 'd MMMM yyyy', { locale: tr })})
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-0">
-                                    <AppointmentTable appointments={tomorrowAppointments} />
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </ScrollArea>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Calendar className="h-5 w-5" />
+                                    Yarının Randevuları
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <AppointmentTable appointments={tomorrowAppointments} date={tomorrow} />
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </SidebarInset>
         </SidebarProvider>
