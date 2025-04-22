@@ -113,7 +113,6 @@ export default function CreateCustomerSegmentPage() {
 
   // Form gönderimi
   function onSubmit(values: z.infer<typeof customerSegmentFormSchema>) {
-    console.log(values)
     // Burada API çağrısı yapılacak
     router.push("/customers/segments")
   }

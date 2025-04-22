@@ -60,7 +60,6 @@ export default function CreateCustomerGroupPage() {
 
   // Form gönderimi
   function onSubmit(values: z.infer<typeof customerGroupFormSchema>) {
-    console.log(values)
     // Burada API çağrısı yapılacak
     router.push("/customers/groups")
   }

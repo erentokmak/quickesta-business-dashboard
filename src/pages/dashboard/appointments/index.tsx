@@ -118,8 +118,6 @@ export default function AppointmentsPage() {
 
     // Debug için session bilgilerini kontrol edelim
     useEffect(() => {
-        console.log('Session:', session)
-        console.log('User ID:', userId)
     }, [session, userId])
 
     const today = new Date()
@@ -155,9 +153,6 @@ export default function AppointmentsPage() {
 
     // Debug için loglar
     useEffect(() => {
-        console.log('Business Data:', businessData)
-        console.log('Business ID:', businessId)
-        console.log('Appointments:', data)
         if (error) {
             console.error('Appointments Error:', error)
         }

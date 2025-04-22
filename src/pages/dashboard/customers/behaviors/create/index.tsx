@@ -146,7 +146,6 @@ export default function CreateCustomerBehaviorPage() {
     })
 
     const onSubmit = (data: FormValues) => {
-        console.log(data)
         router.push("/customers/behaviors")
     }
 

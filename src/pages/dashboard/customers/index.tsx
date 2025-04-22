@@ -119,8 +119,6 @@ export default function CustomersPage() {
 
   // Debug için session bilgilerini kontrol edelim
   useEffect(() => {
-    console.log('Session:', session)
-    console.log('User ID:', userId)
   }, [session, userId])
 
   // Önce business'ı çekelim
@@ -150,9 +148,6 @@ export default function CustomersPage() {
 
   // Debug için loglar
   useEffect(() => {
-    console.log('Business Data:', businessData)
-    console.log('Business ID:', businessId)
-    console.log('Customers:', data)
     if (error) {
       console.error('Customers Error:', error)
     }
