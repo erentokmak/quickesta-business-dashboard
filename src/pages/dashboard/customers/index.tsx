@@ -8,7 +8,7 @@ import { Button } from "@/ui/button"
 import { Input } from "@/ui/input"
 import { SidebarProvider, SidebarInset } from "@/ui/sidebar"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -16,13 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/ui/table"
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu"
-import { 
+import {
   Search,
   MoreHorizontal,
   Plus,
@@ -106,7 +106,7 @@ export default function CustomersPage() {
   const [searchQuery, setSearchQuery] = useState("")
 
   // Müşterileri filtrele
-  const filteredCustomers = customers.filter(customer => 
+  const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     customer.phone.includes(searchQuery)
@@ -125,6 +125,7 @@ export default function CustomersPage() {
                   Müşteri listesi ve yönetimi
                 </p>
               </div>
+              {/*
               <div className="flex items-center gap-2">
                 <Button onClick={() => router.push("/customers/groups")}>
                   <Users className="h-4 w-4 mr-2" />
@@ -143,6 +144,7 @@ export default function CustomersPage() {
                   Yeni Müşteri
                 </Button>
               </div>
+              */}
             </div>
           </div>
           <ScrollArea className="flex-1">
@@ -192,11 +194,10 @@ export default function CustomersPage() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              customer.status === "active" 
-                                ? "bg-green-100 text-green-700" 
-                                : "bg-gray-100 text-gray-700"
-                            }`}>
+                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${customer.status === "active"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-700"
+                              }`}>
                               {customer.status === "active" ? "Aktif" : "Pasif"}
                             </div>
                           </TableCell>
@@ -206,7 +207,7 @@ export default function CustomersPage() {
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
                               {customer.tags.map((tag, index) => (
-                                <span 
+                                <span
                                   key={index}
                                   className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
                                 >
