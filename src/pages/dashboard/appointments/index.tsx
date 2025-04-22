@@ -63,22 +63,20 @@ const AppointmentTable = ({ appointments, date }: { appointments: any[], date: D
                     <TableRow key={appointment.id}>
                         <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
-                                <Clock className="h-4 w-4" />
                                 {format(new Date(`2000-01-01T${appointment.start_time}`), 'HH:mm')}
                             </div>
                         </TableCell>
                         <TableCell>
                             <div className="flex items-center gap-2">
-                                <User className="h-4 w-4" />
                                 <div>
                                     <div className="font-medium">{appointment.customer.full_name}</div>
                                     <div className="text-sm text-muted-foreground">{appointment.customer.phone}</div>
                                 </div>
                             </div>
                         </TableCell>
-                        <TableCell>{appointment.service.name}</TableCell>
+                        <TableCell className="min-w-[130px]">{appointment.service.name}</TableCell>
                         <TableCell>{appointment.team_member.full_name}</TableCell>
-                        <TableCell className="text-right">{appointment.price_charged.toLocaleString('tr-TR')} ₺</TableCell>
+                        <TableCell className="text-right min-w-[100px]">{appointment.price_charged.toLocaleString('tr-TR')} ₺</TableCell>
                         <TableCell>
                             <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${appointment.status === "scheduled"
                                 ? "bg-blue-100 text-blue-700"
@@ -106,7 +104,7 @@ const AppointmentTable = ({ appointments, date }: { appointments: any[], date: D
                     <TableRow>
                         <TableCell colSpan={4}>Toplam</TableCell>
                         <TableCell className="text-right font-medium">{totalRevenue.toLocaleString('tr-TR')} ₺</TableCell>
-                        <TableCell>{totalAppointments} Randevu</TableCell>
+                        <TableCell className="min-w-[100px]">{totalAppointments} Randevu</TableCell>
                     </TableRow>
                 </TableFooter>
             )}
