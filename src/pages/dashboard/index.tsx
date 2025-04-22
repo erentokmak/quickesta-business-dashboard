@@ -1,15 +1,34 @@
 "use client"
 
+import { useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useQuery } from '@apollo/client'
+import { GET_TEAM_MEMBERS_BY_USER_ID, GetTeamMembersByUserIdResponse, GetTeamMembersByUserIdVariables } from '@/graphql/queries/team'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
-import { BusinessCards } from '@/components/dashboard/business-cards'
 import { SidebarInset, SidebarProvider } from '@/ui/sidebar'
 import { ScrollArea } from "@/ui/scroll-area"
 import { Building2 } from "lucide-react"
-import { useSession } from 'next-auth/react'
+import { BusinessCards } from '@/components/dashboard/business-cards'
 
 export default function DashboardPage() {
   const { data: session } = useSession()
-  console.log(session)
+  const userId = session?.user?.id
+
+  const { data: teamData } = useQuery<GetTeamMembersByUserIdResponse, GetTeamMembersByUserIdVariables>(
+    GET_TEAM_MEMBERS_BY_USER_ID,
+    {
+      variables: { userId: userId || '' },
+      skip: !userId,
+    }
+  )
+
+  useEffect(() => {
+    if (teamData?.team_members && teamData.team_members.length > 0) {
+      const businessId = teamData.team_members[0].business_id
+      console.log('Business ID:', businessId)
+    }
+  }, [teamData])
+
   return (
     <SidebarProvider>
       <AppSidebar />
