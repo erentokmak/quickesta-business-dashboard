@@ -18,7 +18,8 @@ import {
   TableRow,
   TableFooter,
 } from "@/ui/table"
-import { GET_BUSINESS_CUSTOMERS, GET_BUSINESS_BY_OWNER } from "@/graphql/queries/customer"
+import { GET_BUSINESS_CUSTOMERS } from "@/graphql/queries/customer"
+import { GET_TEAM_MEMBERS_BY_USER_ID, GetTeamMembersByUserIdResponse, GetTeamMembersByUserIdVariables } from "@/graphql/queries/team"
 import { useSession } from "next-auth/react"
 import { User, Mail, Phone, Calendar } from "lucide-react"
 
@@ -122,24 +123,21 @@ export default function CustomersPage() {
   }, [session, userId])
 
   // Önce business'ı çekelim
-  const { data: businessData, error: businessError } = useQuery(GET_BUSINESS_BY_OWNER, {
-    variables: {
-      owner_id: userId
-    },
-    skip: !userId
-  })
-
-  // Business error'unu kontrol edelim
-  useEffect(() => {
-    if (businessError) {
-      console.error('Business Error:', businessError)
+  const { data: teamData, error: teamError } = useQuery<GetTeamMembersByUserIdResponse, GetTeamMembersByUserIdVariables>(
+    GET_TEAM_MEMBERS_BY_USER_ID,
+    {
+      variables: { userId: userId || '' },
+      skip: !userId,
     }
-  }, [businessError])
+  )
 
-  const businessId = businessData?.businesses[0]?.id
+  // Business ID'yi team_members'dan al
+  const businessId = teamData?.team_members && teamData.team_members.length > 0 
+    ? teamData.team_members[0].business_id 
+    : null
 
   // Sonra customers'ları çekelim
-  const { data, loading, error } = useQuery(GET_BUSINESS_CUSTOMERS, {
+  const { data: customerData, loading: customerLoading } = useQuery(GET_BUSINESS_CUSTOMERS, {
     variables: {
       business_id: businessId
     },
@@ -148,12 +146,18 @@ export default function CustomersPage() {
 
   // Debug için loglar
   useEffect(() => {
-    if (error) {
-      console.error('Customers Error:', error)
+    if (teamError) {
+      console.error('Team Error:', teamError)
     }
-  }, [businessData, businessId, data, error])
+  }, [teamError])
 
-  const customers = data?.customers || []
+  useEffect(() => {
+    if (customerLoading) {
+      console.log('Customers loading...')
+    }
+  }, [customerLoading])
+
+  const customers = customerData?.customers || []
 
   return (
     <SidebarProvider>

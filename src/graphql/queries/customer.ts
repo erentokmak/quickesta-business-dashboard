@@ -1,20 +1,5 @@
 import { gql } from '@apollo/client'
 
-export const GET_BUSINESS_BY_OWNER = gql`
-  query GetBusinessByOwner($owner_id: uuid!) {
-    businesses(
-      where: {
-        owner_id: { _eq: $owner_id }
-        is_deleted: { _eq: false }
-      }
-      limit: 1
-    ) {
-      id
-      name
-    }
-  }
-`
-
 export const GET_BUSINESS_CUSTOMERS = gql`
   query GetBusinessCustomers($business_id: Int!) {
     customers(
@@ -53,4 +38,4 @@ export interface GetBusinessCustomersVariables {
 
 export interface GetBusinessCustomersResponse {
   customers: Customer[];
-} 
+}

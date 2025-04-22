@@ -18,7 +18,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/ui/table"
-import { GET_DAILY_APPOINTMENTS, GET_BUSINESS_BY_OWNER } from "@/graphql/queries/appointment"
+import { GET_DAILY_APPOINTMENTS } from "@/graphql/queries/appointment"
+import { GET_TEAM_MEMBERS_BY_USER_ID, GetTeamMembersByUserIdResponse, GetTeamMembersByUserIdVariables } from "@/graphql/queries/team"
 import { useSession } from "next-auth/react"
 import { Calendar, Clock, User } from "lucide-react"
 
@@ -125,21 +126,25 @@ export default function AppointmentsPage() {
     tomorrow.setDate(tomorrow.getDate() + 1)
 
     // Önce business'ı çekelim
-    const { data: businessData, error: businessError } = useQuery(GET_BUSINESS_BY_OWNER, {
-        variables: {
-            owner_id: userId
-        },
-        skip: !userId
-    })
+    const { data: teamData, error: teamError } = useQuery<GetTeamMembersByUserIdResponse, GetTeamMembersByUserIdVariables>(
+        GET_TEAM_MEMBERS_BY_USER_ID,
+        {
+            variables: { userId: userId || '' },
+            skip: !userId,
+        }
+    )
+
+    // Business ID'yi team_members'dan al
+    const businessId = teamData?.team_members && teamData.team_members.length > 0
+        ? teamData.team_members[0].business_id
+        : null
 
     // Business error'unu kontrol edelim
     useEffect(() => {
-        if (businessError) {
-            console.error('Business Error:', businessError)
+        if (teamError) {
+            console.error('Team Error:', teamError)
         }
-    }, [businessError])
-
-    const businessId = businessData?.businesses[0]?.id
+    }, [teamError])
 
     // Sonra appointments'ları çekelim
     const { data, loading, error } = useQuery(GET_DAILY_APPOINTMENTS, {
@@ -156,7 +161,7 @@ export default function AppointmentsPage() {
         if (error) {
             console.error('Appointments Error:', error)
         }
-    }, [businessData, businessId, data, error])
+    }, [businessId, data, error])
 
     const todayAppointments = data?.appointments.filter(
         (apt: any) => apt.appointment_date === format(today, 'yyyy-MM-dd')

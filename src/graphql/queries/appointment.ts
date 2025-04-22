@@ -33,19 +33,4 @@ export const GET_DAILY_APPOINTMENTS = gql`
       }
     }
   }
-`
-
-export const GET_BUSINESS_BY_OWNER = gql`
-  query GetBusinessByOwner($owner_id: uuid!) {
-    businesses(
-      where: {
-        owner_id: { _eq: $owner_id }
-        is_deleted: { _eq: false }
-      }
-      limit: 1
-    ) {
-      id
-      name
-    }
-  }
 ` 
