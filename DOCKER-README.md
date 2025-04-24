@@ -23,7 +23,7 @@ Make sure you have a `.env` file in the root directory with the following variab
 NODE_ENV=production
 PORT=3002
 NEXT_PUBLIC_APP_ENV=production
-NEXT_PUBLIC_SITE_URL=https://accounts.quickesta.com
+NEXT_PUBLIC_SITE_URL=https://business.quickesta.com
 NEXT_PUBLIC_HASURA_GRAPHQL_URL=https://hasura.abantsu.com.tr/v1/graphql
 NEXT_PUBLIC_HASURA_ADMIN_SECRET=your_hasura_admin_secret
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
@@ -51,13 +51,13 @@ docker-compose up -d
 This will start the following services:
 
 - `nginx` - Nginx web server (ports 80 and 443)
-- `nextjs-app` - Next.js application (accounts.quickesta.com)
+- `nextjs-app` - Next.js application (business.quickesta.com)
 
 ## Accessing the Application
 
 Once the application is running, you can access it at:
 
-- Dashboard: https://accounts.quickesta.com
+- Dashboard: https://business.quickesta.com
 
 ## Stopping the Application
 
